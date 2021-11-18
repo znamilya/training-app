@@ -4,18 +4,18 @@ import useAppController from "../../../hooks/controllers/useAppController";
 
 import LangSwitch from "../../01_basic/LangSwitch";
 
-import { RootStyles } from "./Header.styled";
+import { RootStyled } from "./Header.styled";
 
 const HeaderModule = () => {
     const { lang, setLang } = useAppController();
 
     return (
-        <RootStyles>
+        <RootStyled>
             <Toolbar>
                 <Box sx={{ flex: 1 }} />
                 <LangSwitch currentLang={lang} onChange={setLang} />
             </Toolbar>
-        </RootStyles>
+        </RootStyled>
     );
 };
 

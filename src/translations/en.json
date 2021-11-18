@@ -1,4 +1,9 @@
 {
     "LangSwitch.Items.English": "English",
-    "LangSwitch.Items.Russian": "Russian"
+    "LangSwitch.Items.Russian": "Russian",
+
+    "SidebarModule.Inbox": "Inbox",
+    "SidebarModule.NextTasks": "Next Tasks",
+    "SidebarModule.ActiveProjects": "Active Projects",
+    "SidebarModule.OtherProjects": "All Projects"
 }

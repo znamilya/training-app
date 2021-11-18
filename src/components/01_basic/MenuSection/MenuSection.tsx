@@ -3,31 +3,37 @@ import {
     ListItem,
     ListItemText,
     ListItemButton,
-    Typography,
     ListSubheader,
     Divider,
 } from "@mui/material";
+import { FormattedMessage } from "react-intl";
 
 export type MenuSectionItem = {
-    title: string;
     href: string;
-};
+} & (
+    | {
+          title: string;
+      }
+    | {
+          titleTransId: string;
+      }
+);
 
 export type MenuSectionProps = {
-    title?: string;
+    titleTransId?: string;
     items: MenuSectionItem[];
 };
 
-const MenuSection = ({ title, items }: MenuSectionProps) => {
+const MenuSection = ({ titleTransId, items }: MenuSectionProps) => {
     return (
         <nav>
             <List
                 subheader={
-                    title && (
+                    titleTransId && (
                         <>
                             <Divider />
                             <ListSubheader id="menu-section-title" data-testid="menu-section-title">
-                                {title}
+                                <FormattedMessage id={titleTransId} />
                             </ListSubheader>
                         </>
                     )
@@ -38,7 +44,13 @@ const MenuSection = ({ title, items }: MenuSectionProps) => {
                 {items.map((item) => (
                     <ListItem disablePadding key={item.href}>
                         <ListItemButton component={"a"} href={item.href}>
-                            <ListItemText>{item.title}</ListItemText>
+                            <ListItemText>
+                                {"titleTransId" in item ? (
+                                    <FormattedMessage id={item.titleTransId} />
+                                ) : (
+                                    item.title
+                                )}
+                            </ListItemText>
                         </ListItemButton>
                     </ListItem>
                 ))}
