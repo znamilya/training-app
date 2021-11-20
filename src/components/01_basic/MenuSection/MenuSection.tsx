@@ -6,10 +6,14 @@ import {
     ListSubheader,
     Divider,
 } from "@mui/material";
+import { NavLink } from "typesafe-routes/react-router";
 import { FormattedMessage } from "react-intl";
 
+import TaskCounter from "../TaskCounter";
+
 export type MenuSectionItem = {
-    href: string;
+    href: { $: string };
+    tasksCount: number;
 } & (
     | {
           title: string;
@@ -42,8 +46,13 @@ const MenuSection = ({ titleTransId, items }: MenuSectionProps) => {
                 disablePadding
             >
                 {items.map((item) => (
-                    <ListItem disablePadding key={item.href}>
-                        <ListItemButton component={"a"} href={item.href}>
+                    <ListItem
+                        disablePadding
+                        secondaryAction={<TaskCounter value={item.tasksCount} />}
+                        key={item.href.$}
+                    >
+                        {/* @ts-ignore */}
+                        <ListItemButton component={NavLink} to={item.href}>
                             <ListItemText>
                                 {"titleTransId" in item ? (
                                     <FormattedMessage id={item.titleTransId} />

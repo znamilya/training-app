@@ -8,10 +8,10 @@ type TasksController = {
 };
 
 let fakeTasks: Task[] = [
-    { id: 1, title: "Buy milk", isComplete: false, projectId: 1 },
-    { id: 2, title: "Buy bread", isComplete: false, projectId: 1 },
-    { id: 3, title: "Buy a guitar", isComplete: false, projectId: 2 },
-    { id: 4, title: "Read the book", isComplete: false, projectId: 2 },
+    { id: 1, title: "Buy milk", isComplete: false, projectId: "1" },
+    { id: 2, title: "Buy bread", isComplete: false, projectId: "1" },
+    { id: 3, title: "Buy a guitar", isComplete: false, projectId: "2" },
+    { id: 4, title: "Read the book", isComplete: false, projectId: "2" },
 ];
 
 const useTasksController = (projectId: ProjectId): TasksController => {
@@ -22,7 +22,7 @@ const useTasksController = (projectId: ProjectId): TasksController => {
     const addTask = () => {
         fakeTasks = [
             ...fakeTasks,
-            { id: Math.random(), title: "A new task", isComplete: false, projectId: 2 },
+            { id: Math.random(), title: "A new task", isComplete: false, projectId: "2" },
         ];
     };
 

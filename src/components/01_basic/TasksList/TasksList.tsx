@@ -11,7 +11,7 @@ export type TasksListProps = {
 const TasksList = ({ children, onComplete }: TasksListProps) => {
     return (
         <TaskListContext.Provider value={{ onComplete }}>
-            <RootStyled spacing={3} component="ul">
+            <RootStyled spacing={1} component="ul">
                 {children}
             </RootStyled>
         </TaskListContext.Provider>

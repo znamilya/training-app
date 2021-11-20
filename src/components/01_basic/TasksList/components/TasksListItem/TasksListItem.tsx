@@ -16,7 +16,7 @@ const TasksListItem = ({ children, id }: TasksListItemProps) => {
     const { onComplete } = useContext(TaskListContext);
 
     return (
-        <RootStyled component="li">
+        <RootStyled component="li" elevation={1}>
             {children}
 
             <IconButton

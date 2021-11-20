@@ -1,5 +1,6 @@
 import { Toolbar } from "@mui/material";
 
+import routes from "../../../routes";
 import MenuSection from "../../01_basic/MenuSection";
 
 import { RootStyled } from "./Sidebar.styled";
@@ -10,18 +11,34 @@ const SidebarModule = () => {
             <Toolbar />
             <MenuSection
                 items={[
-                    { titleTransId: "SidebarModule.Inbox", href: "/inbox" },
-                    { titleTransId: "SidebarModule.NextTasks", href: "/next-actions" },
+                    { titleTransId: "SidebarModule.Inbox", href: routes.inbox({}), tasksCount: 0 },
+                    {
+                        titleTransId: "SidebarModule.NextTasks",
+                        href: routes.today({}),
+                        tasksCount: 2,
+                    },
+                    {
+                        titleTransId: "SidebarModule.OtherProjects",
+                        href: routes.projects({}),
+                        tasksCount: 2,
+                    },
                 ]}
             />
             <MenuSection
                 titleTransId="SidebarModule.ActiveProjects"
                 items={[
-                    { title: "Read a book", href: "/projects/adw-awd213ad-aw" },
-                    { title: "Clean up the kitchen", href: "/projects/adw123-f3ad-aw" },
+                    {
+                        title: "Read a book",
+                        href: routes.project({ projectId: "123-21321adw " }),
+                        tasksCount: 2,
+                    },
+                    {
+                        title: "Clean up the kitchen",
+                        href: routes.project({ projectId: "adawda-21321adw " }),
+                        tasksCount: 3,
+                    },
                 ]}
             />
-            <MenuSection titleTransId="SidebarModule.OtherProjects" items={[]} />
         </RootStyled>
     );
 };
