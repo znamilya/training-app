@@ -1,9 +1,9 @@
 import { render } from "@testing-library/react";
 
-import NewTaskButton from "./NewTaskButton";
+import NewProjectTaskButton from "./NewProjectTaskButton";
 
 const renderComponent = () => {
-    const result = render(<NewTaskButton />);
+    const result = render(<NewProjectTaskButton />);
 
     return {
         ...result,

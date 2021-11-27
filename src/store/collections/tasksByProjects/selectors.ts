@@ -3,8 +3,11 @@ import { RootState } from "../../store";
 
 const getSlice = (state: RootState) => state.collections.tasksByProjects;
 
-export const seletIds = (projectId: ProjectId) => (state: RootState) =>
-    getSlice(state)[projectId].ids;
+export const seletIds = (projectId: ProjectId) => (state: RootState) => {
+    const project = getSlice(state)[projectId];
+
+    return project ? project.ids : [];
+};
 
 export const selectTotalCount =
     (projectId: ProjectId) =>

@@ -5,5 +5,5 @@
     "SidebarModule.Inbox": "Inbox",
     "SidebarModule.NextTasks": "Today",
     "SidebarModule.ActiveProjects": "Active Projects",
-    "SidebarModule.OtherProjects": "All Projects"
+    "SidebarModule.AllProjects": "All Projects"
 }

@@ -11,4 +11,7 @@ export const selectAll = (state: RootState): Project[] =>
         .ids.map((id) => projectsEnteties.selectors.selectById(id)(state))
         .filter(notEmpty);
 
+export const selectAllActive = (state: RootState): Project[] =>
+    selectAll(state).filter((project) => project.isActive);
+
 export const selectTotalCount = (state: RootState): number => getSlice(state).totalCount;

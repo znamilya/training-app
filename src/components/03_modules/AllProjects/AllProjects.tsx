@@ -1,5 +1,6 @@
 import * as allProjectsCollection from "../../../store/collections/allProjects";
 import { useAppSelector } from "../../../store/store";
+import ProjectsList, { ProjectListItem } from "../../01_basic/ProjectsList";
 
 /**
  * Displays a list of all existing projects (not removed or archived ones)
@@ -7,12 +8,15 @@ import { useAppSelector } from "../../../store/store";
 const AllProjectsModule = () => {
     const projects = useAppSelector(allProjectsCollection.selectors.selectAll);
 
-    if (projects.length === 0) {
-        // TODO: Replace with <EmptyCollection /> component
-        return <div>No projects</div>;
-    }
-
-    return <section>{projects.map((project) => project.title).join(", ")}</section>;
+    return (
+        <section>
+            <ProjectsList>
+                {projects.map((project) => (
+                    <ProjectListItem projectId={project.id} />
+                ))}
+            </ProjectsList>
+        </section>
+    );
 };
 
 export default AllProjectsModule;

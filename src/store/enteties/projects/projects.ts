@@ -1,6 +1,8 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, current } from "@reduxjs/toolkit";
 
 import { Project, ProjectId } from "../../../entities/project/types";
+
+import * as actions from "./actions";
 
 type State = Record<ProjectId, Project>;
 
@@ -14,6 +16,25 @@ const projectsSlice = createSlice({
     name: "projects",
     initialState,
     reducers: {},
+    extraReducers(builder) {
+        builder
+            .addCase(actions.start, (state, action) => {
+                const projectId = action.payload;
+                const project = state[projectId];
+
+                if (!project) return state;
+
+                project.isActive = true;
+            })
+            .addCase(actions.stop, (state, action) => {
+                const projectId = action.payload;
+                const project = state[projectId];
+
+                if (!project) return state;
+
+                project.isActive = false;
+            });
+    },
 });
 
 export default projectsSlice;

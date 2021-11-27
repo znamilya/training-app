@@ -6,7 +6,7 @@ export const RootStyled = styled("main")(({ theme }) => ({
     marginLeft: SIDEBAR_WIDTH,
     padding: theme.spacing(2),
     paddingTop: theme.spacing(9),
-    background: theme.palette.grey["200"],
+    // background: theme.palette.grey["200"],
 
     [theme.breakpoints.up("sm")]: {
         padding: theme.spacing(3),

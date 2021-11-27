@@ -3,14 +3,14 @@ import AddRoundedIcon from "@mui/icons-material/AddRounded";
 
 import { ProjectId } from "../../../entities/project/types";
 
-type NewTaskButtonProps = {
+type NewProjectTaskButtonProps = {
     projectId: ProjectId;
 };
 
 /**
- * A button for creating new tasks
+ * A button for creating new tasks in a project
  */
-const NewTaskButton = ({ projectId }: NewTaskButtonProps) => {
+const NewProjectTaskButton = ({ projectId }: NewProjectTaskButtonProps) => {
     return (
         <Button startIcon={<AddRoundedIcon />} onClick={() => {}}>
             Add a task
@@ -18,4 +18,4 @@ const NewTaskButton = ({ projectId }: NewTaskButtonProps) => {
     );
 };
 
-export default NewTaskButton;
+export default NewProjectTaskButton;

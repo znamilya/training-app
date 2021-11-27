@@ -10,7 +10,7 @@ import MenuSection from "../../01_basic/MenuSection";
 import { RootStyled } from "./Sidebar.styled";
 
 const SidebarModule = () => {
-    const allActiveProjects = useAppSelector(allActiveProjectsCollection.selectors.selectAll);
+    const allActiveProjects = useAppSelector(allProjectsCollection.selectors.selectAllActive);
     const allProjectsTotalCount = useAppSelector(allProjectsCollection.selectors.selectTotalCount);
     const allTodayTasksTotalCount = useAppSelector(
         allTodayTasksCollection.selectors.selectTotalCount,
@@ -28,7 +28,7 @@ const SidebarModule = () => {
                         tasksCount: allTodayTasksTotalCount,
                     },
                     {
-                        titleTransId: "SidebarModule.OtherProjects",
+                        titleTransId: "SidebarModule.AllProjects",
                         href: routes.projects({}),
                         tasksCount: allProjectsTotalCount,
                     },
