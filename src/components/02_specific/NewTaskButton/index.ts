@@ -1,1 +1,1 @@
-export * from "./NewTaskButton";
+export { default } from "./NewTaskButton";

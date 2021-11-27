@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Toolbar } from "@mui/material";
 import { Box } from "@mui/system";
 import useAppController from "../../../hooks/controllers/useAppController";
@@ -19,4 +20,4 @@ const HeaderModule = () => {
     );
 };
 
-export default HeaderModule;
+export default memo(HeaderModule);

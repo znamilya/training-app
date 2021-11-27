@@ -7,5 +7,6 @@ export type Project = {
     id: ProjectId;
     title: string;
     tasks: TaskId[];
-    category: CategoryId;
+    category?: CategoryId;
+    isActive: boolean;
 };

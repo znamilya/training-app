@@ -1,6 +1,6 @@
 import type { ProjectId } from "../project/types";
 
-export type TaskId = number;
+export type TaskId = string;
 
 export type Task = {
     id: TaskId;

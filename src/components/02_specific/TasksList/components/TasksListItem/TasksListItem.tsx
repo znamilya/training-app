@@ -1,28 +1,29 @@
-import { ReactNode, useContext } from "react";
 import { IconButton } from "@mui/material";
 import CheckCircleOutlineRoundedIcon from "@mui/icons-material/CheckCircleOutlineRounded";
 
-import { AnyId } from "../../../../../types";
-import TaskListContext from "../../context";
+import * as tasksEntity from "../../../../../store/enteties/tasks";
 
 import { RootStyled } from "./TasksListItem.styled";
+import { useAppSelector } from "../../../../../store/store";
+import { TaskId } from "../../../../../entities/task/types";
 
 type TasksListItemProps = {
-    id: AnyId;
-    children: ReactNode;
+    taskId: TaskId;
 };
 
-const TasksListItem = ({ children, id }: TasksListItemProps) => {
-    const { onComplete } = useContext(TaskListContext);
+const TasksListItem = ({ taskId }: TasksListItemProps) => {
+    const task = useAppSelector(tasksEntity.selectors.selectById(taskId));
+
+    if (!task) return null;
 
     return (
         <RootStyled component="li" elevation={1}>
-            {children}
+            {task.title}
 
             <IconButton
                 sx={{ marginLeft: "auto" }}
                 data-testid="task-list-item-complete-button"
-                onClick={() => onComplete(id)}
+                onClick={() => console.log("Complete: ", task.id)}
             >
                 <CheckCircleOutlineRoundedIcon />
             </IconButton>

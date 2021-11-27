@@ -1,0 +1,1 @@
+export const notEmpty = <T>(x: T | null | undefined): x is T => x !== null && x !== undefined;

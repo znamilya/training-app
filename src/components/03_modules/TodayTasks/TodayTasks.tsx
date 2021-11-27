@@ -1,32 +1,19 @@
-import { ProjectId } from "../../../entities/project/types";
-import useTasksController from "../../../hooks/controllers/useTasksController/useTasksController";
-import TasksList, { TasksListItem } from "../../01_basic/TasksList";
-import NewTaskButton from "../../02_specific/NewTaskButton/NewTaskButton";
-
-type TodayTasksModuleProps = {
-    projectId: ProjectId;
-};
+import * as allInboxTasksCollection from "../../../store/collections/allInboxTasks";
+import { useAppSelector } from "../../../store/store";
+import TasksList, { TasksListItem } from "../../02_specific/TasksList";
 
 /**
  * Display a list of the tasks that should be complete today
  */
-const TodayTasksModule = ({ projectId }: TodayTasksModuleProps) => {
-    const { getTasks, markAsComplete } = useTasksController(projectId);
-    const tasks = getTasks();
+const TodayTasksModule = () => {
+    const todayTasksIds = useAppSelector(allInboxTasksCollection.selectors.seletIds);
 
     return (
-        <>
-            {tasks.length > 0 && (
-                <TasksList onComplete={markAsComplete}>
-                    {tasks.map((task) => (
-                        <TasksListItem id={task.id}>
-                            {task.title} {task.isComplete ? "x" : "-"}
-                        </TasksListItem>
-                    ))}
-                </TasksList>
-            )}
-            <NewTaskButton projectId={projectId} />
-        </>
+        <TasksList>
+            {todayTasksIds.map((taskId) => (
+                <TasksListItem taskId={taskId} key={taskId} />
+            ))}
+        </TasksList>
     );
 };
 

@@ -1,11 +1,21 @@
 import { Toolbar } from "@mui/material";
 
 import routes from "../../../routes";
+import * as allProjectsCollection from "../../../store/collections/allProjects";
+import * as allActiveProjectsCollection from "../../../store/collections/allActiveProjects";
+import * as allTodayTasksCollection from "../../../store/collections/allTodayTasks";
+import { useAppSelector } from "../../../store/store";
 import MenuSection from "../../01_basic/MenuSection";
 
 import { RootStyled } from "./Sidebar.styled";
 
 const SidebarModule = () => {
+    const allActiveProjects = useAppSelector(allActiveProjectsCollection.selectors.selectAll);
+    const allProjectsTotalCount = useAppSelector(allProjectsCollection.selectors.selectTotalCount);
+    const allTodayTasksTotalCount = useAppSelector(
+        allTodayTasksCollection.selectors.selectTotalCount,
+    );
+
     return (
         <RootStyled variant="permanent">
             <Toolbar />
@@ -15,29 +25,22 @@ const SidebarModule = () => {
                     {
                         titleTransId: "SidebarModule.NextTasks",
                         href: routes.today({}),
-                        tasksCount: 2,
+                        tasksCount: allTodayTasksTotalCount,
                     },
                     {
                         titleTransId: "SidebarModule.OtherProjects",
                         href: routes.projects({}),
-                        tasksCount: 2,
+                        tasksCount: allProjectsTotalCount,
                     },
                 ]}
             />
             <MenuSection
                 titleTransId="SidebarModule.ActiveProjects"
-                items={[
-                    {
-                        title: "Read a book",
-                        href: routes.project({ projectId: "123-21321adw " }),
-                        tasksCount: 2,
-                    },
-                    {
-                        title: "Clean up the kitchen",
-                        href: routes.project({ projectId: "adawda-21321adw " }),
-                        tasksCount: 3,
-                    },
-                ]}
+                items={allActiveProjects.map((project) => ({
+                    title: project.title,
+                    href: routes.project({ projectId: project.id }),
+                    tasksCount: project.tasks.length,
+                }))}
             />
         </RootStyled>
     );

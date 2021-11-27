@@ -10,6 +10,7 @@ import { NavLink } from "typesafe-routes/react-router";
 import { FormattedMessage } from "react-intl";
 
 import TaskCounter from "../TaskCounter";
+import { useEffect } from "react";
 
 export type MenuSectionItem = {
     href: { $: string };
