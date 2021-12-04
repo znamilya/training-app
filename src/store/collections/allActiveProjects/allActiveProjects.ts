@@ -6,8 +6,8 @@ import { CollectionAllEnvelope } from "../../types";
 type AllActiveProjectsCollectionState = CollectionAllEnvelope<ProjectId>;
 
 const initialState: AllActiveProjectsCollectionState = {
-    totalCount: 2,
-    ids: ["1", "2"],
+    totalCount: 0,
+    ids: [],
 };
 
 const allActiveProjectsCollection = createSlice({

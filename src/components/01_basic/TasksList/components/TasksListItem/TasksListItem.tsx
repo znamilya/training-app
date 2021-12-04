@@ -1,6 +1,8 @@
 import { IconButton } from "@mui/material";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import PauseIcon from "@mui/icons-material/Pause";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import * as taskEntities from "../../../../../store/enteties/tasks";
 
 import { RootStyled } from "./TasksListItem.styled";
@@ -21,6 +23,26 @@ const TasksListItem = ({ taskId }: TasksListItemProps) => {
         <RootStyled component="li" elevation={1}>
             {task.title}
 
+            {/* NEXT ACTION BUTTON */}
+            {task.isComplete ? null : task.isNextAction ? (
+                <IconButton
+                    sx={{ marginLeft: "auto" }}
+                    data-testid="task-list-item-complete-button"
+                    onClick={() => dispatch(taskEntities.actions.unschedule(taskId))}
+                >
+                    <PauseIcon />
+                </IconButton>
+            ) : (
+                <IconButton
+                    sx={{ marginLeft: "auto" }}
+                    data-testid="task-list-item-complete-button"
+                    onClick={() => dispatch(taskEntities.actions.schedule(taskId))}
+                >
+                    <PlayArrowIcon />
+                </IconButton>
+            )}
+
+            {/* COMPLETE BUTTON */}
             {task.isComplete ? (
                 <IconButton
                     sx={{ marginLeft: "auto" }}

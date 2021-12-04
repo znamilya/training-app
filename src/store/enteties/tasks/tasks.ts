@@ -6,18 +6,40 @@ import * as actions from "./actions";
 
 type State = Record<TaskId, Task>;
 
-const initialState: State = {
-    1: { id: "1", title: "Read chapter 1", isComplete: true, projectId: "1" },
-    2: { id: "2", title: "Read chapter 2", isComplete: true, projectId: "1" },
-    3: { id: "3", title: "Read chapter 3", isComplete: false, projectId: "1" },
-};
+const initialState: State = {};
 
-const projectsSlice = createSlice({
+const slice = createSlice({
     name: "tasks",
     initialState,
     reducers: {},
     extraReducers(builder) {
         builder
+            .addCase(actions.create, (state, action) => {
+                const task = action.payload;
+
+                state[task.id] = {
+                    ...task,
+                    isComplete: false,
+                    isInbox: false,
+                    isNextAction: false,
+                };
+            })
+            .addCase(actions.schedule, (state, action) => {
+                const taskId = action.payload;
+                const task = state[taskId];
+
+                if (!task) return state;
+
+                task.isNextAction = true;
+            })
+            .addCase(actions.unschedule, (state, action) => {
+                const taskId = action.payload;
+                const task = state[taskId];
+
+                if (!task) return state;
+
+                task.isNextAction = false;
+            })
             .addCase(actions.complete, (state, action) => {
                 const taskId = action.payload;
                 const task = state[taskId];
@@ -25,6 +47,7 @@ const projectsSlice = createSlice({
                 if (!task) return state;
 
                 task.isComplete = true;
+                task.isNextAction = false;
             })
             .addCase(actions.uncomplete, (state, action) => {
                 const taskId = action.payload;
@@ -37,4 +60,4 @@ const projectsSlice = createSlice({
     },
 });
 
-export default projectsSlice;
+export default slice;

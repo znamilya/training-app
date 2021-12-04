@@ -5,6 +5,8 @@ export type TaskId = string;
 export type Task = {
     id: TaskId;
     title: string;
+    projectId?: ProjectId;
     isComplete: boolean;
-    projectId: ProjectId;
+    isInbox: boolean;
+    isNextAction: boolean;
 };

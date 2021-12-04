@@ -1,35 +1,13 @@
-import {
-    List,
-    ListItem,
-    ListItemText,
-    ListItemButton,
-    ListSubheader,
-    Divider,
-} from "@mui/material";
-import { NavLink } from "typesafe-routes/react-router";
+import { ReactNode } from "react";
+import { List, ListSubheader, Divider } from "@mui/material";
 import { FormattedMessage } from "react-intl";
-
-import TaskCounter from "../TaskCounter";
-import { useEffect } from "react";
-
-export type MenuSectionItem = {
-    href: { $: string };
-    tasksCount: number;
-} & (
-    | {
-          title: string;
-      }
-    | {
-          titleTransId: string;
-      }
-);
 
 export type MenuSectionProps = {
     titleTransId?: string;
-    items: MenuSectionItem[];
+    children: ReactNode;
 };
 
-const MenuSection = ({ titleTransId, items }: MenuSectionProps) => {
+const MenuSection = ({ titleTransId, children }: MenuSectionProps) => {
     return (
         <nav>
             <List
@@ -46,24 +24,7 @@ const MenuSection = ({ titleTransId, items }: MenuSectionProps) => {
                 aria-labelledby="menu-section-title"
                 disablePadding
             >
-                {items.map((item) => (
-                    <ListItem
-                        disablePadding
-                        secondaryAction={<TaskCounter value={item.tasksCount} />}
-                        key={item.href.$}
-                    >
-                        {/* @ts-ignore */}
-                        <ListItemButton component={NavLink} to={item.href}>
-                            <ListItemText>
-                                {"titleTransId" in item ? (
-                                    <FormattedMessage id={item.titleTransId} />
-                                ) : (
-                                    item.title
-                                )}
-                            </ListItemText>
-                        </ListItemButton>
-                    </ListItem>
-                ))}
+                {children}
             </List>
         </nav>
     );

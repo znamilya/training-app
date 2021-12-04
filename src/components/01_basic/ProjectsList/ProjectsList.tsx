@@ -1,15 +1,34 @@
 import { Children, ReactNode } from "react";
 
-import { RootStyled } from "./ProjectsList.styled";
+import NewButton from "../NewButton";
 
-type ProjectsListProps = {
+import { ListStyled, ActionsStyled } from "./ProjectsList.styled";
+
+export type ProjectsListProps = {
     children: ReactNode;
+    onProjectAdd(projectTitle: string): void;
 };
 
-const ProjectsList = ({ children }: ProjectsListProps) => {
-    const hasNoItems = Children.count(children) === 0;
+/**
+ * Display a list of project with ability to add a new one.
+ */
+const ProjectsList = ({ children, onProjectAdd }: ProjectsListProps) => {
+    const hasItems = Children.count(children) > 0;
 
-    return <RootStyled spacing={1}>{hasNoItems ? "No projects yet..." : children}</RootStyled>;
+    return (
+        <>
+            {hasItems ? (
+                <ListStyled spacing={1} component={"ul"}>
+                    {children}
+                </ListStyled>
+            ) : (
+                <div>No projects yet...</div>
+            )}
+            <ActionsStyled>
+                <NewButton addButtonText="Add Project" onCreate={onProjectAdd} />
+            </ActionsStyled>
+        </>
+    );
 };
 
 export default ProjectsList;

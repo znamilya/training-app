@@ -1,5 +1,5 @@
 import { IntlProvider } from "react-intl";
-import { CssBaseline } from "@mui/material";
+import { CssBaseline, GlobalStyles } from "@mui/material";
 import { BrowserRouter } from "react-router-dom";
 import { Route, Switch } from "react-router";
 import { Provider as ReduxProvider } from "react-redux";
@@ -10,13 +10,15 @@ import enMessages from "../../translations/en.json";
 import routes from "../../routes";
 import useAppController from "../../hooks/controllers/useAppController";
 import store from "../../store";
-import HeaderModule from "../03_modules/Header";
+// import HeaderModule from "../03_modules/Header";
 import SidebarModule from "../03_modules/Sidebar";
 import PageWrapper from "../04_layouts/PageWrapper";
 import TodayTasksPage from "../05_pages/TodayTasks";
 import InboxTasksPage from "../05_pages/InboxTasks";
 import AllProjectsPage from "../05_pages/AllProjects";
 import ProjectDetailsPage from "../05_pages/ProjectDetails";
+
+import { RootStyled } from "./App.styled";
 
 const messagesMap = {
     ru: ruMessages,
@@ -27,12 +29,25 @@ function App() {
     const { lang } = useAppController();
 
     return (
-        <div className="App">
+        <RootStyled>
             <CssBaseline />
+            <GlobalStyles
+                styles={{
+                    html: {
+                        height: "100%",
+                    },
+                    body: {
+                        height: "100%",
+                    },
+                    "#root": {
+                        height: "100%",
+                    },
+                }}
+            />
             <ReduxProvider store={store}>
                 <IntlProvider locale={lang} messages={messagesMap[lang]}>
                     <BrowserRouter>
-                        <HeaderModule />
+                        {/* <HeaderModule /> */}
                         <SidebarModule />
                         <PageWrapper>
                             <Switch>
@@ -53,7 +68,7 @@ function App() {
                     </BrowserRouter>
                 </IntlProvider>
             </ReduxProvider>
-        </div>
+        </RootStyled>
     );
 }
 

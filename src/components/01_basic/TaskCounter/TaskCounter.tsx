@@ -5,7 +5,7 @@ export type TaskCounterProps = {
 };
 
 const TaskCounter = ({ value }: TaskCounterProps) => {
-    return <RootStyled>({value})</RootStyled>;
+    return <RootStyled>{value}</RootStyled>;
 };
 
 export default TaskCounter;

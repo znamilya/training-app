@@ -1,16 +1,18 @@
 import React, { ReactNode } from "react";
 
+import NewButton from "../NewButton";
+
 import { ItemsStyled, ActionsStyled } from "./TasksList.styled";
 
 export type TasksListProps = {
     children: ReactNode;
-    addButton?: ReactNode;
+    onTaskAdd(taskTitle: string): void;
 };
 
 /**
- * Display a list of tasks. Optionally can render a button to add a new task
+ * Display a list of tasks with ability to add a new one.
  */
-const TasksList = ({ children, addButton }: TasksListProps) => {
+const TasksList = ({ children, onTaskAdd }: TasksListProps) => {
     const hasNoItems = React.Children.count(children) === 0;
 
     return (
@@ -23,7 +25,9 @@ const TasksList = ({ children, addButton }: TasksListProps) => {
                 </ItemsStyled>
             )}
 
-            {addButton && <ActionsStyled>{addButton}</ActionsStyled>}
+            <ActionsStyled>
+                <NewButton addButtonText="Add Task" onCreate={onTaskAdd} />
+            </ActionsStyled>
         </div>
     );
 };

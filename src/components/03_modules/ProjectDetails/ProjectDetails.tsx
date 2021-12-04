@@ -5,10 +5,10 @@ import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import { ProjectId } from "../../../entities/project/types";
 import { useAppDispatch, useAppSelector } from "../../../store/store";
 import * as projectEnteties from "../../../store/enteties/projects";
+import * as taskEnteties from "../../../store/enteties/tasks";
 import * as tasksByProjectsCollection from "../../../store/collections/tasksByProjects";
 import PageTitle from "../../01_basic/PageTitle";
-import TasksList, { TasksListItem } from "../../02_specific/TasksList";
-import NewProjectTaskButton from "../../02_specific/NewProjectTaskButton";
+import TasksList, { TasksListItem } from "../../01_basic/TasksList";
 import { Fab, Stack } from "@mui/material";
 
 type ProjectDetailsModuleProps = {
@@ -19,6 +19,7 @@ type ProjectDetailsModuleProps = {
  * Displays info about project (its title, tasks, etc) with ability to edit it.
  */
 const ProjectDetailsModule = ({ projectId }: ProjectDetailsModuleProps) => {
+    const dispatch = useAppDispatch();
     const projectSelector = useMemo(
         () => projectEnteties.selectors.selectById(projectId),
         [projectId],
@@ -26,10 +27,18 @@ const ProjectDetailsModule = ({ projectId }: ProjectDetailsModuleProps) => {
     const project = useAppSelector(projectSelector);
     const tasksSelector = useMemo(
         () => tasksByProjectsCollection.selectors.seletIds(projectId),
-        [project],
+        [projectId],
     );
     const tasksIds = useAppSelector(tasksSelector);
-    const dispatch = useAppDispatch();
+
+    const handleTaskAdd = (title: string) => {
+        dispatch(
+            taskEnteties.actions.create({
+                projectId,
+                title,
+            }),
+        );
+    };
 
     if (!project) {
         // TODO: Handle absent project
@@ -44,7 +53,6 @@ const ProjectDetailsModule = ({ projectId }: ProjectDetailsModuleProps) => {
                 alignItems="self-start"
                 spacing={2}
             >
-                <PageTitle>{project.title}</PageTitle>
                 {project.isActive ? (
                     <Fab
                         size="small"
@@ -61,7 +69,7 @@ const ProjectDetailsModule = ({ projectId }: ProjectDetailsModuleProps) => {
                     </Fab>
                 )}
             </Stack>
-            <TasksList addButton={<NewProjectTaskButton projectId={project.id} />}>
+            <TasksList onTaskAdd={handleTaskAdd}>
                 {tasksIds.map((taskId) => (
                     <TasksListItem taskId={taskId} key={taskId} />
                 ))}
