@@ -35,22 +35,29 @@ const LangSwitch = ({ currentLang, onChange }: LangSwitchProps) => {
         throw new Error(`Unknown lang ${currentLangDescriptor}`);
     }
 
-    // HANDLERRS
-    const handleButtonClick = (event: MouseEvent<HTMLButtonElement>) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
-
-    const handleItemClick = (langCode: AvailableLangs) => {
-        onChange(langCode);
-        handleClose();
-    };
-
     return (
         <div>
+            <TriggerButton />
+            <DropdownMenu />
+        </div>
+    );
+
+    // HANDLERS
+    function handleButtonClick(event: MouseEvent<HTMLButtonElement>) {
+        setAnchorEl(event.currentTarget);
+    }
+
+    function handleClose() {
+        setAnchorEl(null);
+    }
+
+    function handleItemClick(langCode: AvailableLangs) {
+        onChange(langCode);
+        handleClose();
+    }
+
+    function TriggerButton() {
+        return (
             <IconButton
                 aria-controls="lang-switch-menu"
                 aria-haspopup="true"
@@ -65,6 +72,11 @@ const LangSwitch = ({ currentLang, onChange }: LangSwitchProps) => {
                     />
                 </ImgWrapperStyled>
             </IconButton>
+        );
+    }
+
+    function DropdownMenu() {
+        return (
             <Menu
                 anchorEl={anchorEl}
                 data-testid="lang-switch-menu"
@@ -87,8 +99,8 @@ const LangSwitch = ({ currentLang, onChange }: LangSwitchProps) => {
                     </MenuItem>
                 ))}
             </Menu>
-        </div>
-    );
+        );
+    }
 };
 
 export default LangSwitch;

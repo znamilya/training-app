@@ -8,9 +8,7 @@ import * as actions from "./actions";
 type State = Record<ProjectId, Project>;
 
 const initialState: State = {
-    // 1: { id: "1", title: "Read a book", isActive: true, tasks: ["1", "2", "3"] },
-    // 2: { id: "2", title: "Clean up the kitchen", isActive: true, tasks: [] },
-    // 3: { id: "3", title: "Fill in the form", isActive: false, tasks: [] },
+    "1-orphans": { id: "1-orphans", title: "Orphans", isActive: false, tasks: [] },
 };
 
 const projectsSlice = createSlice({
@@ -28,6 +26,22 @@ const projectsSlice = createSlice({
                     tasks: [],
                     isActive: false,
                 };
+            })
+            .addCase(actions.remove, (state, action) => {
+                const projectId = action.payload;
+                const project = state[projectId];
+
+                if (!project) return state;
+
+                delete state[projectId];
+            })
+            .addCase(actions.rename, (state, action) => {
+                const { projectId, newTitle } = action.payload;
+                const project = state[projectId];
+
+                if (!project) return state;
+
+                state[projectId].title = newTitle;
             })
             .addCase(actions.start, (state, action) => {
                 const projectId = action.payload;
@@ -47,17 +61,29 @@ const projectsSlice = createSlice({
             });
 
         // TODO: Remove when fetch data from API
-        builder.addCase(taskEnteties.actions.create, (state, action) => {
-            const { projectId, ...task } = action.payload;
+        builder
+            .addCase(taskEnteties.actions.create, (state, action) => {
+                const { projectId, ...task } = action.payload;
 
-            if (!projectId) return state;
+                if (!projectId) return state;
 
-            const project = state[projectId];
+                const project = state[projectId];
 
-            if (!project) return state;
+                if (!project) return state;
 
-            project.tasks.push(task.id);
-        });
+                project.tasks.push(task.id);
+            })
+            .addCase(taskEnteties.actions.remove, (state, action) => {
+                const { taskId, projectId } = action.payload;
+
+                if (!projectId) return state;
+
+                const project = state[projectId];
+
+                if (!project) return state;
+
+                project.tasks = project.tasks.filter((task) => task !== taskId);
+            });
     },
 });
 

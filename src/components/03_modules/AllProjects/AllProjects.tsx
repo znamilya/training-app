@@ -1,42 +1,30 @@
-import * as allProjectsCollection from "../../../store/collections/allProjects";
-import { useAppDispatch, useAppSelector } from "../../../store/store";
-import * as projectEnteties from "../../../store/enteties/projects";
 import ProjectsList, { ProjectListItem } from "../../01_basic/ProjectsList";
 import { ProjectId } from "../../../entities/project/types";
-import { useMemo } from "react";
+import useProjects from "../../../hooks/controllers/useProjects";
 
 /**
  * Displays a list of all existing projects (but not removed or archived ones)
  */
 const AllProjectsModule = () => {
-    const projects = useAppSelector(allProjectsCollection.selectors.selectAll);
-    const dispatch = useAppDispatch();
+    const { selectAllProjects, createProject } = useProjects();
+    const allProjects = selectAllProjects();
 
-    const handleProjectAdd = (title: string) => {
-        dispatch(
-            projectEnteties.actions.create({
-                title,
-            }),
-        );
-    };
+    return <AllProjectsList />;
 
-    return (
-        <section>
-            <ProjectsList onProjectAdd={handleProjectAdd}>
-                {projects.map((project) => (
-                    <ProjectListItemConnected projectId={project.id} />
+    function AllProjectsList() {
+        return (
+            <ProjectsList onProjectAdd={createProject}>
+                {allProjects.map((project) => (
+                    <ProjectListItemConnected projectId={project.id} key={project.id} />
                 ))}
             </ProjectsList>
-        </section>
-    );
+        );
+    }
 };
 
 const ProjectListItemConnected = ({ projectId }: { projectId: ProjectId }) => {
-    const projectSelector = useMemo(
-        () => projectEnteties.selectors.selectById(projectId),
-        [projectId],
-    );
-    const project = useAppSelector(projectSelector);
+    const { selectProjectById } = useProjects();
+    const project = selectProjectById(projectId);
 
     if (!project) return null;
 

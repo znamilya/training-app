@@ -5,8 +5,17 @@ export type TaskId = string;
 export type Task = {
     id: TaskId;
     title: string;
-    projectId?: ProjectId;
-    isComplete: boolean;
-    isInbox: boolean;
-    isNextAction: boolean;
-};
+} & (
+    | {
+          isInbox: false; // descriminant
+          projectId: ProjectId;
+          isComplete: boolean;
+          isNextAction: boolean;
+      }
+    | {
+          isInbox: true; // descriminant
+          projectId: undefined;
+          isComplete: false;
+          isNextAction: false;
+      }
+);

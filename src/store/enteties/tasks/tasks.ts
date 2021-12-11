@@ -17,12 +17,29 @@ const slice = createSlice({
             .addCase(actions.create, (state, action) => {
                 const task = action.payload;
 
+                // @ts-ignore
                 state[task.id] = {
-                    ...task,
                     isComplete: false,
                     isInbox: false,
                     isNextAction: false,
+                    ...task,
                 };
+            })
+            .addCase(actions.rename, (state, action) => {
+                const { taskId, newTitle } = action.payload;
+                const task = state[taskId];
+
+                if (!task) return state;
+
+                state[taskId].title = newTitle;
+            })
+            .addCase(actions.remove, (state, action) => {
+                const { taskId } = action.payload;
+                const task = state[taskId];
+
+                if (!task) return state;
+
+                delete state[taskId];
             })
             .addCase(actions.schedule, (state, action) => {
                 const taskId = action.payload;

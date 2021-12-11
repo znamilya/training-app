@@ -1,15 +1,24 @@
-import * as allTodayTasksCollection from "../../../store/collections/allTodayTasks";
-import { useAppSelector } from "../../../store/store";
+import { TaskId } from "../../../entities/task/types";
+import useProjects from "../../../hooks/controllers/useProjects";
 import TasksList, { TasksListItem } from "../../01_basic/TasksList";
 
 /**
- * Display a list of the tasks that should be complete today
+ * Display a list of the tasks that should be completed today
  */
 const TodayTasksModule = () => {
-    const todayTasksIds = useAppSelector(allTodayTasksCollection.selectors.seletIds);
+    const { createTask, selectNextActionTasks } = useProjects();
+    const todayTasksIds: TaskId[] = selectNextActionTasks();
 
     return (
-        <TasksList onTaskAdd={() => {}}>
+        <TasksList
+            onTaskAdd={(title) =>
+                createTask({
+                    projectId: "1-orphans",
+                    title,
+                    isNextAction: true,
+                })
+            }
+        >
             {todayTasksIds.map((taskId) => (
                 <TasksListItem taskId={taskId} key={taskId} />
             ))}

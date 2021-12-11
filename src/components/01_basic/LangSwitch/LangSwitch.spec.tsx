@@ -28,7 +28,7 @@ const renderComponent = (props?: Partial<LangSwitchProps>) => {
 };
 
 describe("Render", () => {
-    it("should render current lang", () => {
+    it("Renders current lang", () => {
         (
             [
                 { code: "en", title: "English" },
@@ -41,7 +41,7 @@ describe("Render", () => {
         });
     });
 
-    it("should throw an error if current lang is not present in available langs", () => {
+    it("When current lang is not present in available langs -- throws an error", () => {
         suppressRenderError();
 
         expect(() => {
@@ -52,31 +52,33 @@ describe("Render", () => {
 });
 
 describe("Select lang", () => {
-    it("should trigger onChange callback with selected lang", () => {
-        const onChange = jest.fn();
-        const { getButton } = renderComponent({
-            currentLang: "en",
-            onChange,
+    describe("When new lang is selected", () => {
+        it("Calls onChange callback", () => {
+            const onChange = jest.fn();
+            const { getButton } = renderComponent({
+                currentLang: "en",
+                onChange,
+            });
+
+            userEvent.click(getButton());
+            const ruLangItem = screen.getByText("Russian");
+            userEvent.click(ruLangItem);
+
+            expect(onChange).toHaveBeenCalledWith("ru");
         });
 
-        userEvent.click(getButton());
-        const ruLangItem = screen.getByText("Russian");
-        userEvent.click(ruLangItem);
+        it("Closes menu", async () => {
+            const onChange = jest.fn();
+            const { getButton, queryMenu } = renderComponent({
+                currentLang: "en",
+                onChange,
+            });
 
-        expect(onChange).toHaveBeenCalledWith("ru");
-    });
+            userEvent.click(getButton());
+            const ruLangItem = screen.getByText("Russian");
+            userEvent.click(ruLangItem);
 
-    it("should close menu after selecting new lang", async () => {
-        const onChange = jest.fn();
-        const { getButton, queryMenu } = renderComponent({
-            currentLang: "en",
-            onChange,
+            await waitForElementToBeRemoved(() => queryMenu());
         });
-
-        userEvent.click(getButton());
-        const ruLangItem = screen.getByText("Russian");
-        userEvent.click(ruLangItem);
-
-        await waitForElementToBeRemoved(() => queryMenu());
     });
 });

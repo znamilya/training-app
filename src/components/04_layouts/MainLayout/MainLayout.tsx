@@ -1,10 +1,11 @@
-import { Typography } from "@mui/material";
 import { ReactNode } from "react";
+
+import PageTitle from "../../01_basic/PageTitle";
 
 import { HeaderStyled, ContentStyled } from "./MainLayout.styled";
 
 type MainLayoutProps = {
-    title: string;
+    title: string | ReactNode;
     children: ReactNode;
 };
 
@@ -12,9 +13,7 @@ const MainLayout = ({ title, children }: MainLayoutProps) => {
     return (
         <main>
             <HeaderStyled>
-                <Typography variant="h3" component="h1">
-                    {title}
-                </Typography>
+                <PageTitle>{title}</PageTitle>
             </HeaderStyled>
             <ContentStyled>{children}</ContentStyled>
         </main>

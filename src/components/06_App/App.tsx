@@ -3,6 +3,8 @@ import { CssBaseline, GlobalStyles } from "@mui/material";
 import { BrowserRouter } from "react-router-dom";
 import { Route, Switch } from "react-router";
 import { Provider as ReduxProvider } from "react-redux";
+import { PersistGate } from "redux-persist/integration/react";
+import { persistStore } from "redux-persist";
 
 import ruMessages from "../../translations/ru.json";
 import enMessages from "../../translations/en.json";
@@ -14,7 +16,7 @@ import store from "../../store";
 import SidebarModule from "../03_modules/Sidebar";
 import PageWrapper from "../04_layouts/PageWrapper";
 import TodayTasksPage from "../05_pages/TodayTasks";
-import InboxTasksPage from "../05_pages/InboxTasks";
+// import InboxTasksPage from "../05_pages/InboxTasks";
 import AllProjectsPage from "../05_pages/AllProjects";
 import ProjectDetailsPage from "../05_pages/ProjectDetails";
 
@@ -24,6 +26,8 @@ const messagesMap = {
     ru: ruMessages,
     en: enMessages,
 };
+
+let persistor = persistStore(store);
 
 function App() {
     const { lang } = useAppController();
@@ -45,28 +49,30 @@ function App() {
                 }}
             />
             <ReduxProvider store={store}>
-                <IntlProvider locale={lang} messages={messagesMap[lang]}>
-                    <BrowserRouter>
-                        {/* <HeaderModule /> */}
-                        <SidebarModule />
-                        <PageWrapper>
-                            <Switch>
-                                <Route path={routes.inbox.template} exact>
+                <PersistGate loading={null} persistor={persistor}>
+                    <IntlProvider locale={lang} messages={messagesMap[lang]}>
+                        <BrowserRouter>
+                            {/* <HeaderModule /> */}
+                            <SidebarModule />
+                            <PageWrapper>
+                                <Switch>
+                                    {/* <Route path={routes.inbox.template} exact>
                                     <InboxTasksPage />
-                                </Route>
-                                <Route path={routes.today.template} exact>
-                                    <TodayTasksPage />
-                                </Route>
-                                <Route path={routes.projects.template} exact>
-                                    <AllProjectsPage />
-                                </Route>
-                                <Route path={routes.project.template} exact>
-                                    <ProjectDetailsPage />
-                                </Route>
-                            </Switch>
-                        </PageWrapper>
-                    </BrowserRouter>
-                </IntlProvider>
+                                </Route> */}
+                                    <Route path={routes.today.template} exact>
+                                        <TodayTasksPage />
+                                    </Route>
+                                    <Route path={routes.projects.template} exact>
+                                        <AllProjectsPage />
+                                    </Route>
+                                    <Route path={routes.project.template} exact>
+                                        <ProjectDetailsPage />
+                                    </Route>
+                                </Switch>
+                            </PageWrapper>
+                        </BrowserRouter>
+                    </IntlProvider>
+                </PersistGate>
             </ReduxProvider>
         </RootStyled>
     );

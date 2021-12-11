@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, memo } from "react";
 import { Button, Stack, TextField } from "@mui/material";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 
@@ -14,7 +14,7 @@ const NewButton = ({ addButtonText = "Add", onCreate }: NewButtonProps) => {
     const [isEditing, setIsEditing] = useState(false);
     const [taskTitle, setTaskTitle] = useState("");
 
-    // Reset title value when editing leave editing
+    // Reset title value when leave editing mode
     useEffect(() => {
         setTaskTitle("");
     }, [isEditing]);
@@ -28,35 +28,59 @@ const NewButton = ({ addButtonText = "Add", onCreate }: NewButtonProps) => {
             }}
         >
             <Stack spacing={1}>
-                <TextField
-                    value={taskTitle}
-                    type="text"
-                    name="title"
-                    size="small"
-                    autoFocus
-                    fullWidth
-                    onChange={(event) => setTaskTitle(event.target.value)}
-                />
+                <Input />
                 <Stack direction="row" spacing={1}>
-                    <Button
-                        type="submit"
-                        size="small"
-                        variant="contained"
-                        disabled={taskTitle.length === 0}
-                    >
-                        {addButtonText}
-                    </Button>
-                    <Button size="small" onClick={() => setIsEditing(false)}>
-                        Cancel
-                    </Button>
+                    <SubmitButton />
+                    <CancelButton />
                 </Stack>
             </Stack>
         </form>
     ) : (
-        <Button startIcon={<AddRoundedIcon />} onClick={() => setIsEditing(true)}>
-            {addButtonText}
-        </Button>
+        <AddButton />
     );
+
+    function Input() {
+        return (
+            <TextField
+                value={taskTitle}
+                type="text"
+                name="title"
+                size="small"
+                autoFocus
+                fullWidth
+                onChange={(event) => setTaskTitle(event.target.value)}
+            />
+        );
+    }
+
+    function SubmitButton() {
+        return (
+            <Button
+                type="submit"
+                size="small"
+                variant="contained"
+                disabled={taskTitle.length === 0}
+            >
+                {addButtonText}
+            </Button>
+        );
+    }
+
+    function CancelButton() {
+        return (
+            <Button size="small" onClick={() => setIsEditing(false)}>
+                Cancel
+            </Button>
+        );
+    }
+
+    function AddButton() {
+        return (
+            <Button startIcon={<AddRoundedIcon />} onClick={() => setIsEditing(true)}>
+                {addButtonText}
+            </Button>
+        );
+    }
 };
 
-export default NewButton;
+export default memo(NewButton);

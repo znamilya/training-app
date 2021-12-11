@@ -16,11 +16,19 @@ const allProjectsCollection = createSlice({
     initialState,
     reducers: {},
     extraReducers(builder) {
-        builder.addCase(projectEnteties.actions.create, (state, { payload }) => {
-            const { id } = payload;
+        builder
+            .addCase(projectEnteties.actions.create, (state, { payload }) => {
+                const { id } = payload;
 
-            state.ids.push(id);
-        });
+                state.totalCount += 1;
+                state.ids.push(id);
+            })
+            .addCase(projectEnteties.actions.remove, (state, { payload }) => {
+                const projectId = payload;
+
+                state.totalCount -= 1;
+                state.ids = state.ids.filter((id) => id !== projectId);
+            });
     },
 });
 
