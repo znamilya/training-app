@@ -1,20 +1,32 @@
-import * as allTodayTasksCollection from "../../../store/collections/allTodayTasks";
-import { useAppSelector } from "../../../store/store";
-import TasksList, { TasksListItem } from "../../01_basic/TasksList";
+import { memo } from "react";
+
+import { TaskId } from "../../../enteties/task";
+import useProjects from "../../../hooks/controllers/useProjects";
+import TasksList from "../../01_basic/TasksList";
+import NextActionItem from "../../02_specific/NextActionItem";
 
 /**
- * Display a list of the tasks that should be complete today
+ * Display a list of the tasks that should be completed today
  */
 const TodayTasksModule = () => {
-    const todayTasksIds = useAppSelector(allTodayTasksCollection.selectors.seletIds);
+    const { createTask, selectNextActionTasks } = useProjects();
+    const todayTasksIds: TaskId[] = selectNextActionTasks();
 
     return (
-        <TasksList onTaskAdd={() => {}}>
+        <TasksList
+            onTaskAdd={(title) =>
+                createTask({
+                    projectId: "today",
+                    title,
+                    isNextAction: true,
+                })
+            }
+        >
             {todayTasksIds.map((taskId) => (
-                <TasksListItem taskId={taskId} key={taskId} />
+                <NextActionItem taskId={taskId} key={taskId} />
             ))}
         </TasksList>
     );
 };
 
-export default TodayTasksModule;
+export default memo(TodayTasksModule);

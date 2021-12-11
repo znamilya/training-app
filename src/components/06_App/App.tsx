@@ -14,11 +14,13 @@ import store from "../../store";
 import SidebarModule from "../03_modules/Sidebar";
 import PageWrapper from "../04_layouts/PageWrapper";
 import TodayTasksPage from "../05_pages/TodayTasks";
-import InboxTasksPage from "../05_pages/InboxTasks";
+// import InboxTasksPage from "../05_pages/InboxTasks";
+import AllCategoriesPage from "../05_pages/AllCategories";
 import AllProjectsPage from "../05_pages/AllProjects";
 import ProjectDetailsPage from "../05_pages/ProjectDetails";
 
 import { RootStyled } from "./App.styled";
+import PageTitle from "../01_basic/PageTitle";
 
 const messagesMap = {
     ru: ruMessages,
@@ -51,9 +53,9 @@ function App() {
                         <SidebarModule />
                         <PageWrapper>
                             <Switch>
-                                <Route path={routes.inbox.template} exact>
+                                {/* <Route path={routes.inbox.template} exact>
                                     <InboxTasksPage />
-                                </Route>
+                                </Route> */}
                                 <Route path={routes.today.template} exact>
                                     <TodayTasksPage />
                                 </Route>
@@ -62,6 +64,12 @@ function App() {
                                 </Route>
                                 <Route path={routes.project.template} exact>
                                     <ProjectDetailsPage />
+                                </Route>
+                                <Route path={routes.categories.template} exact>
+                                    <AllCategoriesPage />
+                                </Route>
+                                <Route path="*">
+                                    <PageTitle>Page not found</PageTitle>
                                 </Route>
                             </Switch>
                         </PageWrapper>

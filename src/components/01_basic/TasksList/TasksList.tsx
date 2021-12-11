@@ -2,7 +2,7 @@ import React, { ReactNode } from "react";
 
 import NewButton from "../NewButton";
 
-import { ItemsStyled, ActionsStyled } from "./TasksList.styled";
+import { ListStyled, ActionsStyled } from "./TasksList.styled";
 
 export type TasksListProps = {
     children: ReactNode;
@@ -13,23 +13,29 @@ export type TasksListProps = {
  * Display a list of tasks with ability to add a new one.
  */
 const TasksList = ({ children, onTaskAdd }: TasksListProps) => {
-    const hasNoItems = React.Children.count(children) === 0;
+    const hasItems = React.Children.count(children) > 0;
 
     return (
-        <div>
-            {hasNoItems ? (
-                "No tasks yet..."
-            ) : (
-                <ItemsStyled spacing={1} component="ul">
-                    {children}
-                </ItemsStyled>
-            )}
+        <>
+            {hasItems ? <List /> : <EmptyMessage />}
 
             <ActionsStyled>
                 <NewButton addButtonText="Add Task" onCreate={onTaskAdd} />
             </ActionsStyled>
-        </div>
+        </>
     );
+
+    function List() {
+        return (
+            <ListStyled spacing={1} component="ul">
+                {children}
+            </ListStyled>
+        );
+    }
+
+    function EmptyMessage() {
+        return <div>No tasks yet...</div>;
+    }
 };
 
 export default TasksList;

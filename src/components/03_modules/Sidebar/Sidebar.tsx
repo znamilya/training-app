@@ -1,28 +1,25 @@
 // import { Toolbar } from "@mui/material";
-import { ProjectId } from "../../../entities/project/types";
-import InboxIcon from "@mui/icons-material/Inbox";
+import { ProjectId } from "../../../enteties/project/types";
+// import InboxIcon from "@mui/icons-material/Inbox";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import ListAltIcon from "@mui/icons-material/ListAlt";
 import DoubleArrowIcon from "@mui/icons-material/DoubleArrow";
 
 import routes from "../../../routes";
-import * as projectEnteties from "../../../store/enteties/projects";
-import * as allProjectsCollection from "../../../store/collections/allProjects";
-import * as allTodayTasksCollection from "../../../store/collections/allTodayTasks";
-import { useAppSelector } from "../../../store/store";
+// import * as projectEnteties from "../../../store/enteties/projects";
 import MenuSection, { MenuSectionItem } from "../../01_basic/MenuSection";
 
 import { RootStyled } from "./Sidebar.styled";
+// import useInbox from "../../../hooks/controllers/useInbox";
+import useProjects from "../../../hooks/controllers/useProjects";
 
 type ProjectMenuSectionItemProps = {
     projectId: ProjectId;
 };
 
 const ProjectMenuSectionItem = ({ projectId }: ProjectMenuSectionItemProps) => {
-    const project = useAppSelector(projectEnteties.selectors.selectById(projectId));
-    const uncompletedTasksCount = useAppSelector(
-        projectEnteties.selectors.selectUncompletedTasksCount(projectId),
-    );
+    const { selectProjectById, selectUncompletedTasksCount } = useProjects();
+    const project = selectProjectById(projectId);
 
     if (!project) return null;
 
@@ -31,44 +28,49 @@ const ProjectMenuSectionItem = ({ projectId }: ProjectMenuSectionItemProps) => {
             icon={<FormatListBulletedIcon />}
             title={project.title}
             href={routes.project({ projectId: project.id })}
-            tasksCount={uncompletedTasksCount}
+            tasksCount={selectUncompletedTasksCount(projectId)}
         />
     );
 };
 
 const SidebarModule = () => {
-    const allActiveProjects = useAppSelector(allProjectsCollection.selectors.selectAllActive);
-    const allProjectsTotalCount = useAppSelector(allProjectsCollection.selectors.selectTotalCount);
-    const allTodayTasksTotalCount = useAppSelector(
-        allTodayTasksCollection.selectors.selectTotalCount,
-    );
+    // const { selectTasksTotalCount } = useInbox();
+    const { selectNextActionTasks, selectAllActiveProjectsIds, selectAllProjectsTotalCount } =
+        useProjects();
+    const xxx = selectNextActionTasks();
 
     return (
         <RootStyled variant="permanent">
             {/* <Toolbar /> */}
             <MenuSection>
-                <MenuSectionItem
+                {/* <MenuSectionItem
                     icon={<InboxIcon />}
                     titleTransId="SidebarModule.Inbox"
                     href={routes.inbox({})}
-                    tasksCount={0}
-                />
+                    tasksCount={selectTasksTotalCount()}
+                /> */}
                 <MenuSectionItem
                     icon={<DoubleArrowIcon />}
                     titleTransId="SidebarModule.NextTasks"
                     href={routes.today({})}
-                    tasksCount={allTodayTasksTotalCount}
+                    tasksCount={xxx.length}
                 />
                 <MenuSectionItem
                     icon={<ListAltIcon />}
                     titleTransId="SidebarModule.AllProjects"
                     href={routes.projects({})}
-                    tasksCount={allProjectsTotalCount}
+                    tasksCount={selectAllProjectsTotalCount()}
+                />
+                <MenuSectionItem
+                    icon={<ListAltIcon />}
+                    titleTransId="SidebarModule.Categories"
+                    href={routes.categories({})}
+                    disableCounter
                 />
             </MenuSection>
             <MenuSection titleTransId="SidebarModule.ActiveProjects">
-                {allActiveProjects.map((project) => (
-                    <ProjectMenuSectionItem projectId={project.id} />
+                {selectAllActiveProjectsIds().map((projectId) => (
+                    <ProjectMenuSectionItem projectId={projectId} />
                 ))}
             </MenuSection>
         </RootStyled>

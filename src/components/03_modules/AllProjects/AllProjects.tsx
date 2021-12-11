@@ -1,44 +1,45 @@
-import * as allProjectsCollection from "../../../store/collections/allProjects";
-import { useAppDispatch, useAppSelector } from "../../../store/store";
-import * as projectEnteties from "../../../store/enteties/projects";
+import { useEffect } from "react";
+
+import { ProjectId } from "../../../enteties/project/types";
+import useProjects from "../../../hooks/controllers/useProjects";
 import ProjectsList, { ProjectListItem } from "../../01_basic/ProjectsList";
-import { ProjectId } from "../../../entities/project/types";
-import { useMemo } from "react";
 
 /**
  * Displays a list of all existing projects (but not removed or archived ones)
  */
 const AllProjectsModule = () => {
-    const projects = useAppSelector(allProjectsCollection.selectors.selectAll);
-    const dispatch = useAppDispatch();
+    const { fetchAllProjects, createProject, selectAllProjectsIds, selectAllProjectsStatus } =
+        useProjects();
+    const allProjectsIds = selectAllProjectsIds();
+    const status = selectAllProjectsStatus();
 
-    const handleProjectAdd = (title: string) => {
-        dispatch(
-            projectEnteties.actions.create({
-                title,
-            }),
-        );
-    };
+    useEffect(() => {
+        fetchAllProjects();
+    }, [fetchAllProjects]);
+
+    if (status === "loading") {
+        return <h1 data-testid="all-projects-spinner">Loading...</h1>;
+    }
+
+    if (status === "error") {
+        return <h1 data-testid="all-projects-error">Oooops...</h1>;
+    }
 
     return (
-        <section>
-            <ProjectsList onProjectAdd={handleProjectAdd}>
-                {projects.map((project) => (
-                    <ProjectListItemConnected projectId={project.id} />
-                ))}
-            </ProjectsList>
-        </section>
+        <ProjectsList onProjectAdd={createProject}>
+            {allProjectsIds.map((projectId) => (
+                <ProjectListItemConnected projectId={projectId} key={projectId} />
+            ))}
+        </ProjectsList>
     );
 };
 
 const ProjectListItemConnected = ({ projectId }: { projectId: ProjectId }) => {
-    const projectSelector = useMemo(
-        () => projectEnteties.selectors.selectById(projectId),
-        [projectId],
-    );
-    const project = useAppSelector(projectSelector);
+    const { selectProjectById } = useProjects();
+    const project = selectProjectById(projectId);
 
-    if (!project) return null;
+    // FIXIT: return null
+    if (!project) return <div>&nbsp;</div>;
 
     return <ProjectListItem id={project.id} title={project.title} />;
 };

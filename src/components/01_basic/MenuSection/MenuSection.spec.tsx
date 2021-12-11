@@ -1,81 +1,68 @@
-import { screen, render, within } from "@testing-library/react";
+import { IntlProvider } from "react-intl";
+import { render } from "@testing-library/react";
+import { byTestId, byRole } from "testing-library-selector";
+
+import enMessages from "../../../translations/en.json";
+// import { createRenderer } from "../../../utils/test";
+
 import MenuSection, { MenuSectionProps } from "./MenuSection";
+
+// eslint-disable-next-line testing-library/render-result-naming-convention
+// const renderComponent = createRenderer<MenuSectionProps>({
+//     Component: MenuSection,
+//     defaultProps: {
+//         children: "",
+//     },
+//     locators: (props) => ({
+//         title: () => byTestId("menu-section-title"),
+//         queryTitle: () => byTestId("menu-section-title"),
+//         getList: () =>
+//             byRole("list", {
+//                 name: props.titleTransId,
+//             }),
+//         getItems: () => byRole("listitem"),
+//     }),
+// });
 
 const renderComponent = (props: Partial<MenuSectionProps>) => {
     const defaultProps = {
         title: "",
         items: [],
+        children: "",
     };
 
-    const result = render(<MenuSection {...defaultProps} {...props} />);
+    const utils = render(
+        <IntlProvider locale="en" messages={enMessages}>
+            <MenuSection {...defaultProps} {...props} />
+        </IntlProvider>,
+    );
 
     return {
-        ...result,
-        getTitle: () => screen.getByTestId("menu-section-title"),
-        queryTitle: () => screen.queryByTestId("menu-section-title"),
-        getList: () =>
-            screen.getByRole("list", {
-                name: props.title,
-            }),
-        getItems: (list: HTMLElement) => within(list).getAllByRole("listitem"),
+        ...utils,
+        title: byTestId("menu-section-title"),
+        getList: byRole("list", { name: props.titleTransId }),
     };
 };
 
 describe("Render", () => {
-    describe("Main success scenario", () => {
-        const TITLE = "Projects";
-        const ITEMS = [
-            { title: "Project A", href: "/projects/1" },
-            { title: "Project B", href: "/projects/2" },
-        ];
-        let wrapper: any;
-
-        beforeEach(() => {
-            wrapper = renderComponent({
-                title: TITLE,
-                items: ITEMS,
+    describe("When title passed", () => {
+        it("renders menu section", () => {
+            const TITLE = "SidebarModule.Inbox";
+            const { title } = renderComponent({
+                titleTransId: TITLE,
             });
-        });
 
-        it("Should render title", () => {
-            const { getTitle } = wrapper;
-
-            expect(getTitle()).toHaveTextContent(TITLE);
-        });
-
-        it("Should render items", () => {
-            const { getItems, getList } = wrapper;
-            const items = getItems(getList());
-
-            // +1 because title is rendered as li element
-            expect(items).toHaveLength(ITEMS.length + 1);
-
-            ITEMS.forEach((ITEM, index) => {
-                const actualIndex = index + 1;
-
-                expect(items[actualIndex]).toHaveTextContent(ITEM.title);
-                expect(screen.getByText(ITEM.title).closest("a")).toHaveAttribute(
-                    "href",
-                    ITEM.href,
-                );
-            });
+            expect(title.get()).toHaveTextContent("Inbox");
         });
     });
 
     describe("When no title passed", () => {
-        let wrapper: any;
-
-        beforeEach(() => {
-            wrapper = renderComponent({
-                title: "",
-                items: [{ title: "Project 1", href: "/" }],
+        it("renders menu section without title", () => {
+            const { title } = renderComponent({
+                titleTransId: undefined,
             });
-        });
 
-        it("shouldn't render title", () => {
-            const { queryTitle } = wrapper;
-
-            expect(queryTitle()).not.toBeInTheDocument();
+            expect(title.query()).not.toBeInTheDocument();
         });
     });
 });

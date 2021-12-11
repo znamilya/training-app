@@ -1,67 +1,69 @@
-import { IconButton } from "@mui/material";
-import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import PauseIcon from "@mui/icons-material/Pause";
-import PlayArrowIcon from "@mui/icons-material/PlayArrow";
-import * as taskEntities from "../../../../../store/enteties/tasks";
+import { memo } from "react";
+import { Button } from "@mui/material";
 
-import { RootStyled } from "./TasksListItem.styled";
-import { useAppDispatch, useAppSelector } from "../../../../../store/store";
-import { TaskId } from "../../../../../entities/task/types";
+import { TaskId } from "../../../../../enteties/task";
 
-type TasksListItemProps = {
-    taskId: TaskId;
+import {
+    RootStyled,
+    CheckboxStyled,
+    TitleWrapperStyled,
+    TitleStyled,
+    ActionsStyled,
+} from "./TasksListItem.styled";
+
+export type TasksListItemProps = {
+    id: TaskId;
+    title: string;
+    isComplete: boolean;
+    isNextAction: boolean;
+    onComplete(taskId: TaskId, isChecked: boolean): void;
+    onStart(taskId: TaskId): void;
+    onStop(taskId: TaskId): void;
+    onEdit(taskId: TaskId): void;
+    onRemove(taskId: TaskId): void;
 };
 
-const TasksListItem = ({ taskId }: TasksListItemProps) => {
-    const task = useAppSelector(taskEntities.selectors.selectById(taskId));
-    const dispatch = useAppDispatch();
-
-    if (!task) return null;
-
+const TasksListItem = ({
+    id,
+    title,
+    isComplete,
+    isNextAction,
+    onComplete,
+    onStart,
+    onStop,
+    onEdit,
+    onRemove,
+}: TasksListItemProps) => {
     return (
         <RootStyled component="li" elevation={1}>
-            {task.title}
+            <CheckboxStyled>
+                <input
+                    type="checkbox"
+                    aria-label="Complete the task"
+                    checked={isComplete}
+                    onChange={(event) => {
+                        onComplete(id, event.target.checked);
+                    }}
+                />
+            </CheckboxStyled>
 
-            {/* NEXT ACTION BUTTON */}
-            {task.isComplete ? null : task.isNextAction ? (
-                <IconButton
-                    sx={{ marginLeft: "auto" }}
-                    data-testid="task-list-item-complete-button"
-                    onClick={() => dispatch(taskEntities.actions.unschedule(taskId))}
-                >
-                    <PauseIcon />
-                </IconButton>
-            ) : (
-                <IconButton
-                    sx={{ marginLeft: "auto" }}
-                    data-testid="task-list-item-complete-button"
-                    onClick={() => dispatch(taskEntities.actions.schedule(taskId))}
-                >
-                    <PlayArrowIcon />
-                </IconButton>
-            )}
+            <TitleWrapperStyled>
+                <TitleStyled data-testid="tasks-list-item-title">
+                    {isComplete ? <del>{title}</del> : title}
+                </TitleStyled>
+            </TitleWrapperStyled>
 
-            {/* COMPLETE BUTTON */}
-            {task.isComplete ? (
-                <IconButton
-                    sx={{ marginLeft: "auto" }}
-                    data-testid="task-list-item-complete-button"
-                    onClick={() => dispatch(taskEntities.actions.uncomplete(taskId))}
-                >
-                    <CheckCircleIcon />
-                </IconButton>
-            ) : (
-                <IconButton
-                    sx={{ marginLeft: "auto" }}
-                    data-testid="task-list-item-complete-button"
-                    onClick={() => dispatch(taskEntities.actions.complete(taskId))}
-                >
-                    <CheckCircleOutlineIcon />
-                </IconButton>
-            )}
+            <ActionsStyled>
+                {isComplete ? null : isNextAction ? (
+                    <Button onClick={() => onStop(id)}>stop</Button>
+                ) : (
+                    <Button onClick={() => onStart(id)}>start</Button>
+                )}
+                <Button onClick={() => onEdit(id)}>edit</Button>
+                <Button onClick={() => onRemove(id)}>remove</Button>
+            </ActionsStyled>
         </RootStyled>
     );
 };
 
-export default TasksListItem;
+export default memo(TasksListItem);

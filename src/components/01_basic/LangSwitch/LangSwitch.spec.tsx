@@ -1,6 +1,7 @@
+import { IntlProvider } from "react-intl";
 import { render, screen, waitForElementToBeRemoved } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { IntlProvider } from "react-intl";
+import { byTestId } from "testing-library-selector";
 
 import { suppressRenderError } from "../../../utils/test";
 import enMessages from "../../../translations/en.json";
@@ -13,22 +14,23 @@ const renderComponent = (props?: Partial<LangSwitchProps>) => {
         onChange: () => {},
     };
 
-    const result = render(
+    const utils = render(
         <IntlProvider locale="en" messages={enMessages}>
             <LangSwitch {...defaultProps} {...props} />
         </IntlProvider>,
     );
 
     return {
-        ...result,
-        rootNode: result.container.firstChild,
-        getButton: () => screen.getByTestId("lang-switch-button"),
-        queryMenu: () => screen.queryByTestId("lang-switch-menu"),
+        ...utils,
+        // eslint-disable-next-line testing-library/no-node-access
+        rootNode: utils.container.firstChild,
+        triggerButton: byTestId("lang-switch-button"),
+        menu: byTestId("lang-switch-menu"),
     };
 };
 
 describe("Render", () => {
-    it("should render current lang", () => {
+    it("Renders current lang", () => {
         (
             [
                 { code: "en", title: "English" },
@@ -41,7 +43,7 @@ describe("Render", () => {
         });
     });
 
-    it("should throw an error if current lang is not present in available langs", () => {
+    it("When current lang is not present in available langs -- throws an error", () => {
         suppressRenderError();
 
         expect(() => {
@@ -52,31 +54,32 @@ describe("Render", () => {
 });
 
 describe("Select lang", () => {
-    it("should trigger onChange callback with selected lang", () => {
-        const onChange = jest.fn();
-        const { getButton } = renderComponent({
-            currentLang: "en",
-            onChange,
+    describe("When new lang is selected", () => {
+        it("Calls onChange callback", () => {
+            const onChange = jest.fn();
+            const { triggerButton } = renderComponent({
+                currentLang: "en",
+                onChange,
+            });
+
+            userEvent.click(triggerButton.get());
+            userEvent.click(screen.getByText("Russian"));
+
+            expect(onChange).toHaveBeenCalledWith("ru");
         });
 
-        userEvent.click(getButton());
-        const ruLangItem = screen.getByText("Russian");
-        userEvent.click(ruLangItem);
+        it("Closes menu", async () => {
+            const onChange = jest.fn();
+            const { triggerButton, menu } = renderComponent({
+                currentLang: "en",
+                onChange,
+            });
 
-        expect(onChange).toHaveBeenCalledWith("ru");
-    });
+            userEvent.click(triggerButton.get());
+            // Select an option
+            userEvent.click(screen.getByText("Russian"));
 
-    it("should close menu after selecting new lang", async () => {
-        const onChange = jest.fn();
-        const { getButton, queryMenu } = renderComponent({
-            currentLang: "en",
-            onChange,
+            expect(menu.query()).not.toBeInTheDocument();
         });
-
-        userEvent.click(getButton());
-        const ruLangItem = screen.getByText("Russian");
-        userEvent.click(ruLangItem);
-
-        await waitForElementToBeRemoved(() => queryMenu());
     });
 });

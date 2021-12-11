@@ -1,15 +1,14 @@
-import { useMemo } from "react";
+import { Button, Stack } from "@mui/material";
 import PauseIcon from "@mui/icons-material/Pause";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import EditIcon from "@mui/icons-material/Edit";
 
-import { ProjectId } from "../../../entities/project/types";
-import { useAppDispatch, useAppSelector } from "../../../store/store";
-import * as projectEnteties from "../../../store/enteties/projects";
-import * as taskEnteties from "../../../store/enteties/tasks";
-import * as tasksByProjectsCollection from "../../../store/collections/tasksByProjects";
+import { ProjectId } from "../../../enteties/project/types";
+import useProjects from "../../../hooks/controllers/useProjects";
 import PageTitle from "../../01_basic/PageTitle";
-import TasksList, { TasksListItem } from "../../01_basic/TasksList";
-import { Fab, Stack } from "@mui/material";
+// import TasksList, { TasksListItem } from "../../01_basic/TasksList";
+import { useHistory } from "react-router";
+import routes from "../../../routes";
 
 type ProjectDetailsModuleProps = {
     projectId: ProjectId;
@@ -19,26 +18,25 @@ type ProjectDetailsModuleProps = {
  * Displays info about project (its title, tasks, etc) with ability to edit it.
  */
 const ProjectDetailsModule = ({ projectId }: ProjectDetailsModuleProps) => {
-    const dispatch = useAppDispatch();
-    const projectSelector = useMemo(
-        () => projectEnteties.selectors.selectById(projectId),
-        [projectId],
-    );
-    const project = useAppSelector(projectSelector);
-    const tasksSelector = useMemo(
-        () => tasksByProjectsCollection.selectors.seletIds(projectId),
-        [projectId],
-    );
-    const tasksIds = useAppSelector(tasksSelector);
+    const history = useHistory();
+    const {
+        renameProject,
+        stopProject,
+        startProject,
+        removeProject,
+        // createTask,
+        selectProjectById,
+        // selectProjectTasksIds,
+    } = useProjects();
+    const project = selectProjectById(projectId);
+    // const tasksIds = selectProjectTasksIds(projectId);
 
-    const handleTaskAdd = (title: string) => {
-        dispatch(
-            taskEnteties.actions.create({
-                projectId,
-                title,
-            }),
-        );
-    };
+    // const handleTaskAdd = useCallback(
+    //     (title: string) => {
+    //         createTask({ projectId, title });
+    //     },
+    //     [createTask, projectId],
+    // );
 
     if (!project) {
         // TODO: Handle absent project
@@ -46,36 +44,68 @@ const ProjectDetailsModule = ({ projectId }: ProjectDetailsModuleProps) => {
     }
 
     return (
-        <div>
-            <Stack
-                direction="row"
-                justifyContent="space-between"
-                alignItems="self-start"
-                spacing={2}
-            >
-                {project.isActive ? (
-                    <Fab
-                        size="small"
-                        onClick={() => dispatch(projectEnteties.actions.stop(projectId))}
-                    >
-                        <PauseIcon />
-                    </Fab>
-                ) : (
-                    <Fab
-                        size="small"
-                        onClick={() => dispatch(projectEnteties.actions.start(projectId))}
-                    >
-                        <PlayArrowIcon />
-                    </Fab>
-                )}
+        <>
+            <Stack direction="row" spacing={2} mb={2}>
+                {project.isActive ? <StopButton /> : <StartButton />}
+                <RenameButton />
+                <RemoveButton />
             </Stack>
-            <TasksList onTaskAdd={handleTaskAdd}>
-                {tasksIds.map((taskId) => (
-                    <TasksListItem taskId={taskId} key={taskId} />
-                ))}
-            </TasksList>
-        </div>
+
+            <ProjectTasksList />
+        </>
     );
+
+    function handleProjectRemove() {
+        removeProject(projectId);
+        history.push(routes.projects({}).$);
+    }
+
+    function RenameButton() {
+        const handleRename = () => {
+            const title = prompt("New title");
+
+            if (title) {
+                renameProject(projectId, title);
+            }
+        };
+
+        return (
+            <Button startIcon={<EditIcon />} onClick={handleRename}>
+                Rename
+            </Button>
+        );
+    }
+
+    function StopButton() {
+        return (
+            <Button startIcon={<PauseIcon />} onClick={() => stopProject(projectId)}>
+                Stop
+            </Button>
+        );
+    }
+
+    function StartButton() {
+        return (
+            <Button startIcon={<PlayArrowIcon />} onClick={() => startProject(projectId)}>
+                Start
+            </Button>
+        );
+    }
+
+    function RemoveButton() {
+        return <Button onClick={handleProjectRemove}>Remove</Button>;
+    }
+
+    function ProjectTasksList() {
+        return <div>ProjectTasksList</div>;
+        // return (
+        //     <TasksList onTaskAdd={handleTaskAdd}>
+        //         {tasksIds.map((taskId) => (
+        //             <TasksListItem id={taskId} key={taskId} />
+        //         ))}
+        //     </TasksList>
+        // );
+    }
 };
 
 export default ProjectDetailsModule;

@@ -1,8 +1,8 @@
-import { Project } from "../../../entities/project/types";
+import { Project } from "../../../enteties/project/types";
 import { RootState } from "../../store";
 
 import { notEmpty } from "../../../utils/predicates";
-import * as projectsEnteties from "../../enteties/projects";
+import * as projectsEnteties from "../../entities/projects";
 
 const getSlice = (state: RootState) => state.collections.allInboxTasks;
 

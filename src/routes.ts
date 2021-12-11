@@ -10,12 +10,14 @@ const project = route(
     },
     {},
 );
+const categories = route("/categories", {}, {});
 
 const routes = {
     inbox,
     today,
     projects,
     project,
+    categories,
 };
 
 export default routes;

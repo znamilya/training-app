@@ -1,9 +1,10 @@
-import { ProjectId } from "../../../../../entities/project/types";
 import { Link } from "typesafe-routes/react-router";
 
 import routes from "../../../../../routes";
+import { ProjectId } from "../../../../../enteties/project/types";
 
-import { RootStyled, LinkStyled } from "./ProjectListItem.styled";
+import { RootStyled, PaperStyled, LinkStyled } from "./ProjectListItem.styled";
+import CategoryChip from "../../../CategoryChip";
 
 type ProjectListItemProps = {
     id: ProjectId;
@@ -13,9 +14,10 @@ type ProjectListItemProps = {
 const ProjectListItem = ({ id, title }: ProjectListItemProps) => {
     return (
         <RootStyled>
-            <LinkStyled component={Link} to={routes.project({ projectId: id })} elevation={1}>
-                {title}
-            </LinkStyled>
+            <PaperStyled component={Link} to={routes.project({ projectId: id })} elevation={1}>
+                <LinkStyled>{title}</LinkStyled>
+                <CategoryChip label="Programming" />
+            </PaperStyled>
         </RootStyled>
     );
 };

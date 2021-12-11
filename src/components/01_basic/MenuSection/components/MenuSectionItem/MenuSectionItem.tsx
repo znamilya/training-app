@@ -9,18 +9,29 @@ import { ReactNode } from "react";
 export type MenuSectionItemProps = {
     href: { $: string };
     icon?: ReactNode;
-    tasksCount: number;
 } & (
     | {
-          title: string;
+          disableCounter: true;
       }
     | {
-          titleTransId: string;
+          disableCounter?: false;
+          tasksCount: number;
       }
-);
-const MenuSectionItem = ({ href, icon, tasksCount, ...props }: MenuSectionItemProps) => {
-    const secondaryAction =
-        tasksCount === 0 ? <CheckIcon color="success" /> : <TaskCounter value={tasksCount} />;
+) &
+    (
+        | {
+              title: string;
+          }
+        | {
+              titleTransId: string;
+          }
+    );
+const MenuSectionItem = ({ href, icon, ...props }: MenuSectionItemProps) => {
+    const secondaryAction = props.disableCounter ? null : props.tasksCount === 0 ? (
+        <CheckIcon color="success" />
+    ) : (
+        <TaskCounter value={props.tasksCount} />
+    );
 
     return (
         <ListItem disablePadding secondaryAction={secondaryAction} key={href.$}>

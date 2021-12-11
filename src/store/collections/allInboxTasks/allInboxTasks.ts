@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-import { TaskId } from "../../../entities/task/types";
+import { TaskId } from "../../../enteties/task";
 import { CollectionAllEnvelope } from "../../types";
 
 type AllInboxTasksCollectionState = CollectionAllEnvelope<TaskId>;
@@ -8,6 +8,7 @@ type AllInboxTasksCollectionState = CollectionAllEnvelope<TaskId>;
 const initialState: AllInboxTasksCollectionState = {
     totalCount: 0,
     ids: [],
+    status: "idle",
 };
 
 const allInboxTasksCollection = createSlice({

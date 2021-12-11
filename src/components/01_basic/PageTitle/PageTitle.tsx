@@ -1,7 +1,7 @@
 import { Typography } from "@mui/material";
 import { ReactNode } from "react";
 
-type PageTitleProps = {
+export type PageTitleProps = {
     children: ReactNode;
 };
 
