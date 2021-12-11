@@ -23,6 +23,8 @@ const NewButton = ({ addButtonText = "Add", onCreate }: NewButtonProps) => {
         <form
             onSubmit={(event) => {
                 event.preventDefault();
+                if (taskTitle.length > 100) return;
+
                 onCreate(taskTitle);
                 setIsEditing(false);
             }}

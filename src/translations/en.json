@@ -3,7 +3,7 @@
     "LangSwitch.Items.Russian": "Russian",
 
     "SidebarModule.Inbox": "Inbox",
-    "SidebarModule.NextTasks": "Today",
+    "SidebarModule.NextTasks": "Next Actions",
     "SidebarModule.ActiveProjects": "Active Projects",
-    "SidebarModule.AllProjects": "All Projects"
+    "SidebarModule.AllProjects": "All Projets"
 }

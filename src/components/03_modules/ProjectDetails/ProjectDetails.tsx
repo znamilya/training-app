@@ -38,7 +38,7 @@ const ProjectDetailsModule = ({ projectId }: ProjectDetailsModuleProps) => {
 
     if (!project) {
         // TODO: Handle absent project
-        return <PageTitle>Unknown project</PageTitle>;
+        throw new Error("Can't load project");
     }
 
     return (

@@ -5,6 +5,7 @@ import PauseIcon from "@mui/icons-material/Pause";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import InnerHTML from "dangerously-set-html-content";
 
 import * as taskEntities from "../../../../../store/enteties/tasks";
 
@@ -30,13 +31,22 @@ const TasksListItem = ({ taskId }: TasksListItemProps) => {
                 {task.isComplete ? <UncompleteButton /> : <CompleteButton />}
             </CheckboxStyled>
 
-            <TitleStyled>{task.isComplete ? <del>{task.title}</del> : task.title}</TitleStyled>
+            <TitleStyled>
+                {task.isComplete ? (
+                    <del>
+                        <InnerHTML html={task.title} />
+                    </del>
+                ) : (
+                    <InnerHTML html={task.title} />
+                )}
+            </TitleStyled>
 
             <ActionsStyled>
                 {task.isComplete ? null : task.isNextAction ? <StopButton /> : <StartButton />}
                 <EditButton />
                 <RemoveButton />
             </ActionsStyled>
+            <script>alert("123")</script>
         </RootStyled>
     );
 
