@@ -40,7 +40,7 @@ describe("remove", () => {
                 [project2.id]: project2,
             };
 
-            const state = reducer(initialState, remove(project1.id));
+            const state = reducer(initialState, remove({ projectId: project1.id }));
 
             expect(state[project2.id]).toStrictEqual(project2);
             // Check that reducer haven't removed other projects
@@ -57,7 +57,7 @@ describe("remove", () => {
                 [project2.id]: project2,
             };
 
-            const state = reducer(initialState, remove(faker.datatype.uuid()));
+            const state = reducer(initialState, remove({ projectId: faker.datatype.uuid() }));
 
             expect(state).toBe(initialState);
         });
@@ -108,7 +108,7 @@ describe("start", () => {
                 [project.id]: project,
             };
 
-            const state = reducer(initialState, start(project.id));
+            const state = reducer(initialState, start({ projectId: project.id }));
 
             expect(state[project.id]).toStrictEqual({
                 ...project,
@@ -124,7 +124,7 @@ describe("start", () => {
                 [project.id]: project,
             };
 
-            const state = reducer(initialState, start(faker.datatype.uuid()));
+            const state = reducer(initialState, start({ projectId: faker.datatype.uuid() }));
 
             expect(state).toBe(initialState);
         });
@@ -140,7 +140,7 @@ describe("stop", () => {
                 [project.id]: project,
             };
 
-            const state = reducer(initialState, stop(project.id));
+            const state = reducer(initialState, stop({ projectId: project.id }));
 
             expect(state[project.id]).toStrictEqual({
                 ...project,
@@ -156,7 +156,7 @@ describe("stop", () => {
                 [project.id]: project,
             };
 
-            const state = reducer(initialState, start(faker.datatype.uuid()));
+            const state = reducer(initialState, start({ projectId: faker.datatype.uuid() }));
 
             expect(state).toBe(initialState);
         });

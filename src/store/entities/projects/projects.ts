@@ -40,7 +40,7 @@ const projectsSlice = createSlice({
                 };
             })
             .addCase(actions.remove, (state, action) => {
-                const projectId = action.payload;
+                const { projectId } = action.payload;
                 const project = state[projectId];
 
                 if (!project) return;
@@ -56,7 +56,7 @@ const projectsSlice = createSlice({
                 }),
             )
             .addCase(actions.start, (state, action) => {
-                const projectId = action.payload;
+                const { projectId } = action.payload;
                 const project = state[projectId];
 
                 if (!project) return;
@@ -64,7 +64,7 @@ const projectsSlice = createSlice({
                 project.isActive = true;
             })
             .addCase(actions.stop, (state, action) => {
-                const projectId = action.payload;
+                const { projectId } = action.payload;
                 const project = state[projectId];
 
                 if (!project) return;

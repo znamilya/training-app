@@ -4,7 +4,7 @@ import { RootState } from "../../store";
 import { notEmpty } from "../../../utils/predicates";
 import * as projectsEnteties from "../../entities/projects";
 
-const getSlice = (state: RootState) => state.collections.allProjects;
+export const getSlice = (state: RootState) => state.collections.allProjects;
 
 export const getIds = (state: RootState) => getSlice(state).ids;
 

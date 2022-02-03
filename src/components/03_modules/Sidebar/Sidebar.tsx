@@ -12,6 +12,8 @@ import MenuSection, { MenuSectionItem } from "../../01_basic/MenuSection";
 import { RootStyled } from "./Sidebar.styled";
 // import useInbox from "../../../hooks/controllers/useInbox";
 import useProjects from "../../../hooks/controllers/useProjects";
+import { useAppSelector } from "../../../store/store";
+import * as allProjectsCollection from "../../../store/collections/allProjects";
 
 type ProjectMenuSectionItemProps = {
     projectId: ProjectId;
@@ -34,10 +36,8 @@ const ProjectMenuSectionItem = ({ projectId }: ProjectMenuSectionItemProps) => {
 };
 
 const SidebarModule = () => {
-    // const { selectTasksTotalCount } = useInbox();
-    const { selectNextActionTasks, selectAllActiveProjectsIds, selectAllProjectsTotalCount } =
-        useProjects();
-    const xxx = selectNextActionTasks();
+    const allProjectsTotalCount = useAppSelector(allProjectsCollection.selectors.selectTotalCount);
+    const allActiveProjectsIds = useAppSelector(allProjectsCollection.selectors.selectAllActiveIds);
 
     return (
         <RootStyled variant="permanent">
@@ -49,27 +49,27 @@ const SidebarModule = () => {
                     href={routes.inbox({})}
                     tasksCount={selectTasksTotalCount()}
                 /> */}
-                <MenuSectionItem
+                {/* <MenuSectionItem
                     icon={<DoubleArrowIcon />}
                     titleTransId="SidebarModule.NextTasks"
                     href={routes.today({})}
                     tasksCount={xxx.length}
-                />
+                /> */}
                 <MenuSectionItem
                     icon={<ListAltIcon />}
                     titleTransId="SidebarModule.AllProjects"
                     href={routes.projects({})}
-                    tasksCount={selectAllProjectsTotalCount()}
+                    tasksCount={allProjectsTotalCount}
                 />
-                <MenuSectionItem
+                {/* <MenuSectionItem
                     icon={<ListAltIcon />}
                     titleTransId="SidebarModule.Categories"
                     href={routes.categories({})}
                     disableCounter
-                />
+                /> */}
             </MenuSection>
             <MenuSection titleTransId="SidebarModule.ActiveProjects">
-                {selectAllActiveProjectsIds().map((projectId) => (
+                {allActiveProjectsIds.map((projectId) => (
                     <ProjectMenuSectionItem projectId={projectId} />
                 ))}
             </MenuSection>

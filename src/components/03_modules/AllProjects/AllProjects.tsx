@@ -1,33 +1,33 @@
 import { useEffect } from "react";
 
 import { ProjectId } from "../../../enteties/project/types";
-import useProjects from "../../../hooks/controllers/useProjects";
+import { useAppDispatch, useAppSelector } from "../../../store/store";
+import * as allProjectsCollection from "../../../store/collections/allProjects";
+import * as projectEnteties from "../../../store/entities/projects";
 import ProjectsList, { ProjectListItem } from "../../01_basic/ProjectsList";
 
 /**
  * Displays a list of all existing projects (but not removed or archived ones)
  */
 const AllProjectsModule = () => {
-    const { fetchAllProjects, createProject, selectAllProjectsIds, selectAllProjectsStatus } =
-        useProjects();
-    const allProjectsIds = selectAllProjectsIds();
-    const status = selectAllProjectsStatus();
+    const dispatch = useAppDispatch();
+    const allProjectsEnvelope = useAppSelector(allProjectsCollection.selectors.getSlice);
 
     useEffect(() => {
-        fetchAllProjects();
-    }, [fetchAllProjects]);
+        dispatch(allProjectsCollection.actions.load());
+    }, [dispatch]);
 
-    if (status === "loading") {
+    if (allProjectsEnvelope.status === "loading") {
         return <h1 data-testid="all-projects-spinner">Loading...</h1>;
     }
 
-    if (status === "error") {
+    if (allProjectsEnvelope.status === "error") {
         return <h1 data-testid="all-projects-error">Oooops...</h1>;
     }
 
     return (
-        <ProjectsList onProjectAdd={createProject}>
-            {allProjectsIds.map((projectId) => (
+        <ProjectsList onProjectAdd={(title) => dispatch(projectEnteties.actions.create({ title }))}>
+            {allProjectsEnvelope.ids.map((projectId) => (
                 <ProjectListItemConnected projectId={projectId} key={projectId} />
             ))}
         </ProjectsList>
@@ -35,8 +35,7 @@ const AllProjectsModule = () => {
 };
 
 const ProjectListItemConnected = ({ projectId }: { projectId: ProjectId }) => {
-    const { selectProjectById } = useProjects();
-    const project = selectProjectById(projectId);
+    const project = useAppSelector(projectEnteties.selectors.selectById(projectId));
 
     // FIXIT: return null
     if (!project) return <div>&nbsp;</div>;

@@ -27,7 +27,7 @@ const allProjectsCollection = createSlice({
                 selfState.ids = payload.result;
                 selfState.status = "success";
             })
-            .addCase(actions.load.rejected, (selfState) => {
+            .addCase(actions.load.rejected, (selfState, action) => {
                 selfState.status = "error";
             })
             .addCase(projectEnteties.actions.create, (state, { payload }) => {
@@ -37,7 +37,7 @@ const allProjectsCollection = createSlice({
                 state.ids.push(id);
             })
             .addCase(projectEnteties.actions.remove, (state, { payload }) => {
-                const projectId = payload;
+                const { projectId } = payload;
 
                 state.totalCount -= 1;
                 state.ids = state.ids.filter((id) => id !== projectId);

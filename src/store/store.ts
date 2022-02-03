@@ -1,10 +1,13 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
+import thunkMiddleware from "redux-thunk";
 
 import projectsEnteties from "./entities/projects";
 import tasksEnteties from "./entities/tasks";
 import allInboxTasksCollection from "./collections/allInboxTasks";
 import allProjectsCollection from "./collections/allProjects";
+import ProjectsService from "../services/ProjectsService";
+import ApiService from "../services/ApiService";
 
 export const rootReducer = combineReducers({
     enteties: combineReducers({
@@ -17,9 +20,18 @@ export const rootReducer = combineReducers({
     }),
 });
 
+const apiService = new ApiService({
+    url: "https://mrdone.free.beeceptor.com/api/v1",
+});
+
+const projectsService = new ProjectsService({
+    apiService,
+});
+
 const store = configureStore({
     reducer: rootReducer,
     devTools: true,
+    middleware: [thunkMiddleware.withExtraArgument({ projectsService })],
 });
 
 export type RootState = ReturnType<typeof store.getState>;

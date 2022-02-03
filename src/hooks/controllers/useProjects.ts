@@ -49,7 +49,7 @@ const useProjects = (): UseProjectsController => {
     );
 
     const removeProject = useCallback<UseProjectsController["removeProject"]>(
-        (projectId) => dispatch(projectEnteties.actions.remove(projectId)),
+        (projectId) => dispatch(projectEnteties.actions.remove({ projectId })),
         [dispatch],
     );
 
@@ -59,12 +59,12 @@ const useProjects = (): UseProjectsController => {
     );
 
     const stopProject = useCallback<UseProjectsController["stopProject"]>(
-        (projectId) => dispatch(projectEnteties.actions.stop(projectId)),
+        (projectId) => dispatch(projectEnteties.actions.stop({ projectId })),
         [dispatch],
     );
 
     const startProject = useCallback<UseProjectsController["startProject"]>(
-        (projectId) => dispatch(projectEnteties.actions.start(projectId)),
+        (projectId) => dispatch(projectEnteties.actions.start({ projectId })),
         [dispatch],
     );
 

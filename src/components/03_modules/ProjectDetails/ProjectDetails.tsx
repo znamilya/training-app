@@ -1,14 +1,15 @@
+import { useHistory } from "react-router";
 import { Button, Stack } from "@mui/material";
 import PauseIcon from "@mui/icons-material/Pause";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import EditIcon from "@mui/icons-material/Edit";
 
 import { ProjectId } from "../../../enteties/project/types";
-import useProjects from "../../../hooks/controllers/useProjects";
-import PageTitle from "../../01_basic/PageTitle";
+import * as projectEnteties from "../../../store/entities/projects";
 // import TasksList, { TasksListItem } from "../../01_basic/TasksList";
-import { useHistory } from "react-router";
 import routes from "../../../routes";
+import { useAppDispatch, useAppSelector } from "../../../store/store";
+import PageTitle from "../../01_basic/PageTitle";
 
 type ProjectDetailsModuleProps = {
     projectId: ProjectId;
@@ -19,16 +20,8 @@ type ProjectDetailsModuleProps = {
  */
 const ProjectDetailsModule = ({ projectId }: ProjectDetailsModuleProps) => {
     const history = useHistory();
-    const {
-        renameProject,
-        stopProject,
-        startProject,
-        removeProject,
-        // createTask,
-        selectProjectById,
-        // selectProjectTasksIds,
-    } = useProjects();
-    const project = selectProjectById(projectId);
+    const dispatch = useAppDispatch();
+    const project = useAppSelector(projectEnteties.selectors.selectById(projectId));
     // const tasksIds = selectProjectTasksIds(projectId);
 
     // const handleTaskAdd = useCallback(
@@ -37,6 +30,27 @@ const ProjectDetailsModule = ({ projectId }: ProjectDetailsModuleProps) => {
     //     },
     //     [createTask, projectId],
     // );
+    const handleStartButtonClick = () => {
+        dispatch(projectEnteties.actions.start({ projectId }));
+    };
+
+    const handleStopButtonClick = () => {
+        dispatch(projectEnteties.actions.stop({ projectId }));
+    };
+
+    const handleRenameButtonClick = () => {
+        const newTitle = prompt("New title");
+
+        if (newTitle) {
+            dispatch(projectEnteties.actions.rename({ projectId, newTitle }));
+        }
+    };
+
+    const handleRemoveButtonClick = () => {
+        dispatch(projectEnteties.actions.remove({ projectId }));
+
+        history.push(routes.projects({}).$);
+    };
 
     if (!project) {
         // TODO: Handle absent project
@@ -46,66 +60,30 @@ const ProjectDetailsModule = ({ projectId }: ProjectDetailsModuleProps) => {
     return (
         <>
             <Stack direction="row" spacing={2} mb={2}>
-                {project.isActive ? <StopButton /> : <StartButton />}
-                <RenameButton />
-                <RemoveButton />
+                {project.isActive ? (
+                    // STOP BUTTON
+                    <Button startIcon={<PauseIcon />} onClick={handleStopButtonClick}>
+                        Stop
+                    </Button>
+                ) : (
+                    // START BUTTON
+                    <Button startIcon={<PlayArrowIcon />} onClick={handleStartButtonClick}>
+                        Start
+                    </Button>
+                )}
+
+                {/* RENAME BUTTON */}
+                <Button startIcon={<EditIcon />} onClick={handleRenameButtonClick}>
+                    Rename
+                </Button>
+
+                {/* REMOVE BUTTON */}
+                <Button onClick={handleRemoveButtonClick}>Remove</Button>
             </Stack>
 
-            <ProjectTasksList />
+            <div>ProjectTasksList</div>
         </>
     );
-
-    function handleProjectRemove() {
-        removeProject(projectId);
-        history.push(routes.projects({}).$);
-    }
-
-    function RenameButton() {
-        const handleRename = () => {
-            const title = prompt("New title");
-
-            if (title) {
-                renameProject(projectId, title);
-            }
-        };
-
-        return (
-            <Button startIcon={<EditIcon />} onClick={handleRename}>
-                Rename
-            </Button>
-        );
-    }
-
-    function StopButton() {
-        return (
-            <Button startIcon={<PauseIcon />} onClick={() => stopProject(projectId)}>
-                Stop
-            </Button>
-        );
-    }
-
-    function StartButton() {
-        return (
-            <Button startIcon={<PlayArrowIcon />} onClick={() => startProject(projectId)}>
-                Start
-            </Button>
-        );
-    }
-
-    function RemoveButton() {
-        return <Button onClick={handleProjectRemove}>Remove</Button>;
-    }
-
-    function ProjectTasksList() {
-        return <div>ProjectTasksList</div>;
-        // return (
-        //     <TasksList onTaskAdd={handleTaskAdd}>
-        //         {tasksIds.map((taskId) => (
-        //             <TasksListItem id={taskId} key={taskId} />
-        //         ))}
-        //     </TasksList>
-        // );
-    }
 };
 
 export default ProjectDetailsModule;

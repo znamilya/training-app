@@ -1,12 +1,5 @@
-import React from "react";
-import { render } from "@testing-library/react";
 import { rest } from "msw";
 import { setupServer as setupMSWServer } from "msw/node";
-import { byTestId } from "testing-library-selector";
-import { IntlProvider } from "react-intl";
-
-import enMessages from "../translations/en.json";
-import { DeepPartial } from "utility-types";
 
 export const suppressRenderError = () => {
     jest.spyOn(console, "error")
@@ -40,16 +33,18 @@ export const suppressRenderError = () => {
 // };
 
 export const setupServer = ({
-    delay,
-    status = 200,
     response = [],
+    status = 200,
+    url = "/",
+    delay,
 }: {
-    delay?: number;
-    status?: number;
     response: any;
+    status?: number;
+    url?: string;
+    delay?: number;
 }) => {
     const handlers = [
-        rest.get("https://jsonplaceholder.typicode.com/todos", async (_, res, ctx) => {
+        rest.get(url, async (_, res, ctx) => {
             if (delay) {
                 await ctx.delay(delay);
             }
