@@ -8,7 +8,7 @@ const getSlice = (state: RootState) => state.collections.allInboxTasks;
 
 export const selectAll = (state: RootState): Project[] =>
     getSlice(state)
-        .ids.map((id) => projectsEnteties.selectors.selectById(id)(state))
+        .ids.map((id) => projectsEnteties.selectors.selectById(id)(state)?.data)
         .filter(notEmpty);
 
 export const seletIds = (state: RootState) => getSlice(state).ids;

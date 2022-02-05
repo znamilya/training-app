@@ -3,6 +3,7 @@ import { AnyAction } from "redux";
 import { createProject } from "../../../../enteties/project/factory";
 import { create, remove, rename, start, stop } from "../actions";
 import projectsSlice from "../projects";
+import { selectById } from "../selectors";
 
 const reducer = projectsSlice.reducer;
 
@@ -11,22 +12,6 @@ it("returns the initial state", () => {
 
     expect(state).toStrictEqual({
         "1-orphans": { id: "1-orphans", title: "Orphans", isActive: false, tasks: [] },
-    });
-});
-
-describe("create", () => {
-    it("creates a new project with the given title", () => {
-        // const ID = faker.datatype.uuid();
-        const TITLE = faker.lorem.sentence(3);
-        const action = create({ title: TITLE });
-        const state = reducer(undefined, action);
-
-        expect(state[action.payload.id]).toStrictEqual({
-            id: action.payload.id,
-            title: TITLE,
-            tasks: [],
-            isActive: false,
-        });
     });
 });
 

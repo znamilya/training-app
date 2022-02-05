@@ -7,6 +7,7 @@ import * as taskEnteties from "../../store/entities/tasks";
 import * as allProjectsCollection from "../../store/collections/allProjects";
 import { useAppDispatch, useAppSelector } from "../../store/store";
 import { Task, TaskId } from "../../enteties/task";
+import { EntityEnvelope } from "../../store/types";
 
 type UseProjectsController = {
     fetchAllProjects(): void;
@@ -22,7 +23,7 @@ type UseProjectsController = {
     selectAllProjectsStatus(): string;
     selectAllActiveProjectsIds(): ProjectId[];
     selectAllProjectsTotalCount(): number;
-    selectProjectById(projectId: ProjectId): Project | null;
+    selectProjectById(projectId: ProjectId): EntityEnvelope<Project> | null;
     selectProjectTasksIds(projectId: ProjectId): TaskId[];
     selectTaskById(taskId: TaskId): Task | null;
     selectUncompletedTasksCount(projectId: ProjectId): number;
@@ -119,7 +120,7 @@ const useProjects = (): UseProjectsController => {
     );
 
     const selectProjectTasksIds = useCallback<UseProjectsController["selectProjectTasksIds"]>(
-        (projectId) => selector(projectEnteties.selectors.selectById(projectId))?.tasks || [],
+        (projectId) => selector(projectEnteties.selectors.selectById(projectId))?.data.tasks || [],
         [selector],
     );
 

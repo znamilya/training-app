@@ -6,7 +6,7 @@ import { ListStyled, ActionsStyled } from "./ProjectsList.styled";
 
 export type ProjectsListProps = {
     children: ReactNode;
-    onProjectAdd(title: string): void;
+    onProjectAdd(title: string, onSuccess: () => void, onError: () => void): void;
 };
 
 /**
@@ -17,26 +17,19 @@ const ProjectsList = ({ children, onProjectAdd }: ProjectsListProps) => {
 
     return (
         <>
-            {hasItems ? <List /> : <EmptyMessage />}
+            {hasItems ? (
+                <ListStyled spacing={1} component={"ul"}>
+                    {children}
+                </ListStyled>
+            ) : (
+                <div>No projects yet...</div>
+            )}
 
             <ActionsStyled>
                 <NewButton addButtonText="Add Project" onCreate={onProjectAdd} />
             </ActionsStyled>
         </>
     );
-
-    // ------------------------------------------------------------------ //
-    function List() {
-        return (
-            <ListStyled spacing={1} component={"ul"}>
-                {children}
-            </ListStyled>
-        );
-    }
-
-    function EmptyMessage() {
-        return <div>No projects yet...</div>;
-    }
 };
 
 export default ProjectsList;

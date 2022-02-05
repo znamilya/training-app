@@ -1,13 +1,29 @@
 import { AnyId } from "../types";
 
+export type HasStatus = {
+    status: string;
+};
+
+export type HasError<T = any> = {
+    error: T | null;
+};
+
+/*******************************************************************
+ * ENTITIES
+ *******************************************************************/
+export type EntityEnvelope<T> = {
+    data: T;
+} & HasStatus &
+    HasError<string>;
+
 /*******************************************************************
  * COLLECTIONS
  *******************************************************************/
 export type CollectionEvelope<EntityId extends AnyId = string> = {
     totalCount: number;
     ids: EntityId[];
-    status: string;
-};
+} & HasStatus &
+    HasError<string>;
 
 export type CollectionAllEnvelope<EntityId extends AnyId = string> = CollectionEvelope<EntityId>;
 

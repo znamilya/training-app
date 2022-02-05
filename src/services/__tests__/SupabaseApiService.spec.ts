@@ -1,7 +1,7 @@
 /* eslint-disable jest/no-conditional-expect */
 import NetworkError from "../../errors/NetworkError";
 import { setupServer } from "../../utils/test";
-import ApiService from "../ApiService";
+import SupabaseApiService from "../SupabaseApiService";
 
 describe("getAll", () => {
     test("when successully return response", async () => {
@@ -9,16 +9,16 @@ describe("getAll", () => {
         const apiUrl = "http://localhost/api";
         const resourceName = "projects";
         const { closeServer } = setupServer({
-            url: `${apiUrl}/${resourceName}`,
+            url: `${apiUrl}/rest/v1/${resourceName}`,
             response: RESPONSE,
             status: 200,
         });
 
-        const apiService = new ApiService({
+        const service = new SupabaseApiService({
             url: apiUrl,
         });
 
-        const response = await apiService.getAll(resourceName);
+        const response = await service.getAll(resourceName);
 
         expect(response.isRight()).toBe(true);
         expect(response.value).toEqual(RESPONSE);
@@ -31,16 +31,16 @@ describe("getAll", () => {
         const resourceName = "projects";
         const STATUS_CODE = 404;
         const { closeServer } = setupServer({
-            url: `${apiUrl}/${resourceName}`,
+            url: `${apiUrl}/rest/v1/${resourceName}`,
             response: {},
             status: STATUS_CODE,
         });
 
-        const apiService = new ApiService({
+        const service = new SupabaseApiService({
             url: apiUrl,
         });
 
-        const response = await apiService.getAll(resourceName);
+        const response = await service.getAll(resourceName);
 
         expect(response.isLeft()).toBe(true);
         expect(response.value).toBeInstanceOf(NetworkError);
@@ -65,10 +65,10 @@ describe("getById", () => {
             status: 200,
         });
 
-        const apiService = new ApiService({
+        const service = new SupabaseApiService({
             url: apiUrl,
         });
-        const response = await apiService.getById(resourceName, id);
+        const response = await service.getById(resourceName, id);
 
         expect(response.isRight()).toBe(true);
         expect(response.value).toEqual(RESPONSE);
@@ -87,10 +87,10 @@ describe("getById", () => {
             status: STATUS_CODE,
         });
 
-        const apiService = new ApiService({
+        const service = new SupabaseApiService({
             url: apiUrl,
         });
-        const response = await apiService.getById(resourceName, id);
+        const response = await service.getById(resourceName, id);
 
         expect(response.isLeft()).toBe(true);
         expect(response.value).toBeInstanceOf(NetworkError);

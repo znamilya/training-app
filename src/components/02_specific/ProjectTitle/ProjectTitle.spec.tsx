@@ -46,10 +46,14 @@ describe("Render", () => {
             const state = {
                 enteties: {
                     projects: {
-                        [PROJECT_ID]: createProject({
-                            id: PROJECT_ID,
-                            title: PROJECT_TITLE,
-                        }),
+                        [PROJECT_ID]: {
+                            status: "success",
+                            data: createProject({
+                                id: PROJECT_ID,
+                                title: PROJECT_TITLE,
+                            }),
+                            error: null,
+                        },
                     },
                 },
             };

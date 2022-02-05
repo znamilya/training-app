@@ -10,6 +10,7 @@ import * as projectEnteties from "../../../store/entities/projects";
 import routes from "../../../routes";
 import { useAppDispatch, useAppSelector } from "../../../store/store";
 import PageTitle from "../../01_basic/PageTitle";
+import { unwrapEntityEnvelope } from "../../../store/utils";
 
 type ProjectDetailsModuleProps = {
     projectId: ProjectId;
@@ -21,7 +22,7 @@ type ProjectDetailsModuleProps = {
 const ProjectDetailsModule = ({ projectId }: ProjectDetailsModuleProps) => {
     const history = useHistory();
     const dispatch = useAppDispatch();
-    const project = useAppSelector(projectEnteties.selectors.selectById(projectId));
+    const projectEnvelope = useAppSelector(projectEnteties.selectors.selectById(projectId));
     // const tasksIds = selectProjectTasksIds(projectId);
 
     // const handleTaskAdd = useCallback(
@@ -52,10 +53,12 @@ const ProjectDetailsModule = ({ projectId }: ProjectDetailsModuleProps) => {
         history.push(routes.projects({}).$);
     };
 
-    if (!project) {
+    if (!projectEnvelope) {
         // TODO: Handle absent project
         return <PageTitle>Unknown project</PageTitle>;
     }
+
+    const project = unwrapEntityEnvelope(projectEnvelope);
 
     return (
         <>

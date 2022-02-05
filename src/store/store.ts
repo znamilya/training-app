@@ -7,7 +7,7 @@ import tasksEnteties from "./entities/tasks";
 import allInboxTasksCollection from "./collections/allInboxTasks";
 import allProjectsCollection from "./collections/allProjects";
 import ProjectsService from "../services/ProjectsService";
-import ApiService from "../services/ApiService";
+import SupabaseApiService from "../services/SupabaseApiService";
 
 export const rootReducer = combineReducers({
     enteties: combineReducers({
@@ -20,8 +20,8 @@ export const rootReducer = combineReducers({
     }),
 });
 
-const apiService = new ApiService({
-    url: "https://mrdone.free.beeceptor.com/api/v1",
+const apiService = new SupabaseApiService({
+    url: "https://laielpakeuvmclzkdhpo.supabase.co",
 });
 
 const projectsService = new ProjectsService({

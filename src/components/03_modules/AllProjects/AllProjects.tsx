@@ -1,9 +1,10 @@
-import { useEffect } from "react";
+import { useLayoutEffect } from "react";
 
 import { ProjectId } from "../../../enteties/project/types";
 import { useAppDispatch, useAppSelector } from "../../../store/store";
 import * as allProjectsCollection from "../../../store/collections/allProjects";
 import * as projectEnteties from "../../../store/entities/projects";
+import { hasError, isLoading, unwrapEntityEnvelope } from "../../../store/utils";
 import ProjectsList, { ProjectListItem } from "../../01_basic/ProjectsList";
 
 /**
@@ -13,20 +14,24 @@ const AllProjectsModule = () => {
     const dispatch = useAppDispatch();
     const allProjectsEnvelope = useAppSelector(allProjectsCollection.selectors.getSlice);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         dispatch(allProjectsCollection.actions.load());
     }, [dispatch]);
 
-    if (allProjectsEnvelope.status === "loading") {
+    if (isLoading(allProjectsEnvelope)) {
         return <h1 data-testid="all-projects-spinner">Loading...</h1>;
     }
 
-    if (allProjectsEnvelope.status === "error") {
+    if (hasError(allProjectsEnvelope)) {
         return <h1 data-testid="all-projects-error">Oooops...</h1>;
     }
 
     return (
-        <ProjectsList onProjectAdd={(title) => dispatch(projectEnteties.actions.create({ title }))}>
+        <ProjectsList
+            onProjectAdd={(title, onSuccess, onError) =>
+                dispatch(projectEnteties.actions.create({ title, onSuccess, onError }))
+            }
+        >
             {allProjectsEnvelope.ids.map((projectId) => (
                 <ProjectListItemConnected projectId={projectId} key={projectId} />
             ))}
@@ -35,10 +40,12 @@ const AllProjectsModule = () => {
 };
 
 const ProjectListItemConnected = ({ projectId }: { projectId: ProjectId }) => {
-    const project = useAppSelector(projectEnteties.selectors.selectById(projectId));
+    const projectEnvelope = useAppSelector(projectEnteties.selectors.selectById(projectId));
 
     // FIXIT: return null
-    if (!project) return <div>&nbsp;</div>;
+    if (!projectEnvelope) return <div>&nbsp;</div>;
+
+    const project = unwrapEntityEnvelope(projectEnvelope);
 
     return <ProjectListItem id={project.id} title={project.title} />;
 };

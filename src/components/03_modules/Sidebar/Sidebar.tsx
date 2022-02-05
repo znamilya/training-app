@@ -14,6 +14,7 @@ import { RootStyled } from "./Sidebar.styled";
 import useProjects from "../../../hooks/controllers/useProjects";
 import { useAppSelector } from "../../../store/store";
 import * as allProjectsCollection from "../../../store/collections/allProjects";
+import { unwrapEntityEnvelope } from "../../../store/utils";
 
 type ProjectMenuSectionItemProps = {
     projectId: ProjectId;
@@ -21,9 +22,11 @@ type ProjectMenuSectionItemProps = {
 
 const ProjectMenuSectionItem = ({ projectId }: ProjectMenuSectionItemProps) => {
     const { selectProjectById, selectUncompletedTasksCount } = useProjects();
-    const project = selectProjectById(projectId);
+    const projectEnvelope = selectProjectById(projectId);
 
-    if (!project) return null;
+    if (!projectEnvelope) return null;
+
+    const project = unwrapEntityEnvelope(projectEnvelope);
 
     return (
         <MenuSectionItem
