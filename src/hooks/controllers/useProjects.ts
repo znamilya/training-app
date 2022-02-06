@@ -120,7 +120,7 @@ const useProjects = (): UseProjectsController => {
     );
 
     const selectProjectTasksIds = useCallback<UseProjectsController["selectProjectTasksIds"]>(
-        (projectId) => selector(projectEnteties.selectors.selectById(projectId))?.data.tasks || [],
+        (projectId) => selector(projectEnteties.selectors.selectById(projectId))?.data?.tasks || [],
         [selector],
     );
 

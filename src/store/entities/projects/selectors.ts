@@ -15,7 +15,7 @@ export const selectById =
 
 export const selectActive = (state: RootState): EntityEnvelope<Project>[] => {
     return Object.values(state.enteties.projects).filter(
-        (projectEnvelope) => projectEnvelope.data.isActive,
+        (projectEnvelope) => projectEnvelope.data?.isActive || false,
     );
 };
 
@@ -26,7 +26,7 @@ export const selectUncompletedTasksCount =
 
         if (!projectEnvelope) return 0;
 
-        return projectEnvelope.data.tasks
+        return (projectEnvelope.data?.tasks || [])
             .map((taskId) => tasksEntities.selectors.selectById(taskId))
             .map((select) => select(state))
             .filter(notEmpty)

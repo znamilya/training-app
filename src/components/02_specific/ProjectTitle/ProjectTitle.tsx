@@ -11,10 +11,9 @@ export type ProjectTitleProps = {
 const ProjectTitle = ({ projectId }: ProjectTitleProps) => {
     const { selectProjectById } = useProjects();
     const projectEnvelope = selectProjectById(projectId);
-
-    if (!projectEnvelope) return null;
-
     const project = unwrapEntityEnvelope(projectEnvelope);
+
+    if (!project) return null;
 
     return <span>{project.title}</span>;
 };

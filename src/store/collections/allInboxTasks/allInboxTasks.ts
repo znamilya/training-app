@@ -10,6 +10,7 @@ const initialState: AllInboxTasksCollectionState = {
     ids: [],
     status: "idle",
     error: null,
+    isStale: false,
 };
 
 const allInboxTasksCollection = createSlice({

@@ -12,7 +12,7 @@ export type HasError<T = any> = {
  * ENTITIES
  *******************************************************************/
 export type EntityEnvelope<T> = {
-    data: T;
+    data: T | null;
 } & HasStatus &
     HasError<string>;
 
@@ -22,6 +22,7 @@ export type EntityEnvelope<T> = {
 export type CollectionEvelope<EntityId extends AnyId = string> = {
     totalCount: number;
     ids: EntityId[];
+    isStale: boolean;
 } & HasStatus &
     HasError<string>;
 

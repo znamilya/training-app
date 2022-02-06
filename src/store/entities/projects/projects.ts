@@ -1,8 +1,7 @@
-import { AnyAction, CaseReducer, createSlice } from "@reduxjs/toolkit";
+import { AnyAction, CaseReducer, createSlice, isAllOf, isFulfilled } from "@reduxjs/toolkit";
 
 import { Project, ProjectId } from "../../../enteties/project/types";
 import { EntityEnvelope } from "../../types";
-import * as taskEnteties from "../tasks";
 
 import * as actions from "./actions";
 
@@ -30,40 +29,82 @@ const projectsSlice = createSlice({
     reducers: {},
     extraReducers(builder) {
         builder
+            // FETCH
+            .addCase(actions.fetch.pending, (selfState, { meta }) => {
+                const { projectId } = meta.arg;
+
+                if (!selfState[projectId]) {
+                    selfState[projectId] = {
+                        data: null,
+                        status: "loading",
+                        error: null,
+                    };
+                }
+
+                selfState[projectId].status = "loading";
+            })
+            // CREATE
             .addCase(actions.create.fulfilled, (state, { payload }) => {
                 const id = payload.result;
 
                 state[id] = payload.entities.projects[id];
             })
-            .addCase(actions.remove, (state, action) => {
-                const { projectId } = action.payload;
+            // REMOVE
+            .addCase(actions.remove.pending, (state, { meta }) => {
+                const { projectId } = meta.arg;
+                const project = state[projectId];
+
+                if (!project) return;
+
+                state[projectId].status = "removing";
+                state[projectId].error = null;
+            })
+            .addCase(actions.remove.fulfilled, (state, { payload }) => {
+                const projectId = payload.result;
                 const project = state[projectId];
 
                 if (!project) return;
 
                 delete state[projectId];
             })
+            .addCase(actions.remove.rejected, (state, { meta, error }) => {
+                const { projectId } = meta.arg;
+                const project = state[projectId];
+
+                if (!project) return;
+
+                state[projectId].status = "error";
+                state[projectId].error = error.message || "unknown error";
+            })
+            // RENAME
             .addCase(
                 actions.rename,
                 projectExists<ReturnType<typeof actions.rename>>((state, action) => {
                     const { projectId, newTitle } = action.payload;
+                    const project = state[projectId];
 
-                    state[projectId].data.title = newTitle;
+                    if (!project.data) {
+                        return;
+                    }
+
+                    project.data.title = newTitle;
                 }),
             )
+            // START
             .addCase(actions.start, (state, action) => {
                 const { projectId } = action.payload;
                 const project = state[projectId];
 
-                if (!project) return;
+                if (!project.data) return;
 
                 project.data.isActive = true;
             })
+            // STOP
             .addCase(actions.stop, (state, action) => {
                 const { projectId } = action.payload;
                 const project = state[projectId];
 
-                if (!project) return;
+                if (!project.data) return;
 
                 project.data.isActive = false;
             });
@@ -75,7 +116,9 @@ const projectsSlice = createSlice({
                     for (const project of Object.values(
                         payload.entities.projects,
                     ) as EntityEnvelope<Project>[]) {
-                        selfState[project.data.id] = project;
+                        if (project.data) {
+                            selfState[project.data.id] = project;
+                        }
                     }
                 }
             },

@@ -1,6 +1,6 @@
 import { Either } from "@sweet-monads/either";
 
-import { Project } from "../enteties/project/types";
+import { Project, ProjectId } from "../enteties/project/types";
 import ProjectsServiceError from "../errors/ProjectsServiceError";
 
 import { IApiService } from "./types";
@@ -16,7 +16,9 @@ class ProjectsService {
         this.#apiService = apiService;
     }
 
-    async fetchAll(): Promise<Either<ProjectsServiceError, Project[]>> {
+    async fetchAll(): Promise<
+        Either<ProjectsServiceError, { data: Project[]; totalCount: number }>
+    > {
         const result = await this.#apiService.getAll<Project>("projects");
 
         return result.mapLeft(
@@ -24,15 +26,30 @@ class ProjectsService {
         );
     }
 
+    async fetch(projectId: ProjectId): Promise<Either<ProjectsServiceError, Project>> {
+        const result = await this.#apiService.getById<Project>("projects", projectId);
+
+        return result.mapLeft(
+            (error) => new ProjectsServiceError("Can't load project", error.statusCode),
+        );
+    }
+
     async insert(title: string): Promise<Either<ProjectsServiceError, Project>> {
         const result = await this.#apiService.insert<Project>("projects", {
             title,
             tasks: [],
-            // isActive: false,
         });
 
         return result.mapLeft(
             (error) => new ProjectsServiceError("Can't create project", error.statusCode),
+        );
+    }
+
+    async remove(projectId: ProjectId): Promise<Either<ProjectsServiceError, Project>> {
+        const result = await this.#apiService.remove<Project>("projects", projectId);
+
+        return result.mapLeft(
+            (error) => new ProjectsServiceError("Can't remove project", error.statusCode),
         );
     }
 }

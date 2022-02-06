@@ -1,3 +1,5 @@
+import { AsyncThunkPayloadCreator, createAsyncThunk as cat } from "@reduxjs/toolkit";
+import ProjectsService from "../services/ProjectsService";
 import { EntityEnvelope, HasError, HasStatus } from "./types";
 
 export const wrapEntityEnvelope = <T>(data: T): EntityEnvelope<T> => ({
@@ -6,8 +8,31 @@ export const wrapEntityEnvelope = <T>(data: T): EntityEnvelope<T> => ({
     error: null,
 });
 
-export const unwrapEntityEnvelope = <T>(envelope: EntityEnvelope<T>): T => envelope.data;
+export const unwrapEntityEnvelope = <T>(envelope: EntityEnvelope<T> | null): T | null =>
+    envelope?.data || null;
 
-export const isLoading = ({ status }: HasStatus): boolean => status === "loading";
+export const isLoading = (envelope: HasStatus | null): boolean => envelope?.status === "loading";
 
-export const hasError = ({ error }: HasError): boolean => Boolean(error);
+export const hasError = (envelope: HasError | null): boolean => Boolean(envelope?.error);
+
+export const createAsyncThunk = <Returned, ThunkArg = void>(
+    name: string,
+    creator: AsyncThunkPayloadCreator<
+        Returned,
+        ThunkArg,
+        {
+            extra: {
+                projectsService: ProjectsService;
+            };
+        }
+    >,
+) =>
+    cat<
+        Returned,
+        ThunkArg,
+        {
+            extra: {
+                projectsService: ProjectsService;
+            };
+        }
+    >(name, creator);

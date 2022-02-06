@@ -13,6 +13,7 @@ const initialState: AllProjectsCollectionState = {
     ids: [],
     status: "idle",
     error: null,
+    isStale: true,
 };
 
 const allProjectsCollection = createSlice({
@@ -26,11 +27,13 @@ const allProjectsCollection = createSlice({
             })
             .addCase(actions.load.fulfilled, (selfState, { payload }) => {
                 selfState.ids = payload.result;
-                selfState.totalCount = payload.result.length;
+                selfState.totalCount = payload.totalCount;
                 selfState.status = "success";
+                selfState.isStale = false;
             })
-            .addCase(actions.load.rejected, (selfState) => {
+            .addCase(actions.load.rejected, (selfState, { error }) => {
                 selfState.status = "error";
+                selfState.error = error.message || null;
             })
             // ENTITY ACIONS
             .addCase(projectEnteties.actions.create.fulfilled, (selfState, { payload }) => {
@@ -38,11 +41,8 @@ const allProjectsCollection = createSlice({
 
                 selfState.ids.push(payload.result);
             })
-            .addCase(projectEnteties.actions.remove, (selfState, { payload }) => {
-                const { projectId } = payload;
-
-                selfState.totalCount -= 1;
-                selfState.ids = selfState.ids.filter((id) => id !== projectId);
+            .addCase(projectEnteties.actions.remove.fulfilled, (selfState) => {
+                selfState.isStale = true;
             });
     },
 });

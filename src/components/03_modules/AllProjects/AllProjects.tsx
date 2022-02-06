@@ -1,38 +1,38 @@
 import { useLayoutEffect } from "react";
 
 import { ProjectId } from "../../../enteties/project/types";
-import { useAppDispatch, useAppSelector } from "../../../store/store";
-import * as allProjectsCollection from "../../../store/collections/allProjects";
-import * as projectEnteties from "../../../store/entities/projects";
-import { hasError, isLoading, unwrapEntityEnvelope } from "../../../store/utils";
+import { useAllProjects } from "../../../store/collections/allProjects";
+import { useProject } from "../../../store/entities/projects";
 import ProjectsList, { ProjectListItem } from "../../01_basic/ProjectsList";
 
 /**
  * Displays a list of all existing projects (but not removed or archived ones)
  */
 const AllProjectsModule = () => {
-    const dispatch = useAppDispatch();
-    const allProjectsEnvelope = useAppSelector(allProjectsCollection.selectors.getSlice);
+    const { data, isLoading, error, load } = useAllProjects();
+    const { create: createProject } = useProject();
 
     useLayoutEffect(() => {
-        dispatch(allProjectsCollection.actions.load());
-    }, [dispatch]);
+        load();
+    }, [load]);
 
-    if (isLoading(allProjectsEnvelope)) {
+    if (isLoading) {
         return <h1 data-testid="all-projects-spinner">Loading...</h1>;
     }
 
-    if (hasError(allProjectsEnvelope)) {
-        return <h1 data-testid="all-projects-error">Oooops...</h1>;
+    if (error) {
+        return <h1 data-testid="all-projects-error">{error}</h1>;
     }
 
     return (
         <ProjectsList
-            onProjectAdd={(title, onSuccess, onError) =>
-                dispatch(projectEnteties.actions.create({ title, onSuccess, onError }))
-            }
+            onProjectAdd={async (title, onSuccess, onError) => {
+                await createProject({ title });
+                onSuccess();
+                // onError
+            }}
         >
-            {allProjectsEnvelope.ids.map((projectId) => (
+            {data.map((projectId) => (
                 <ProjectListItemConnected projectId={projectId} key={projectId} />
             ))}
         </ProjectsList>
@@ -40,12 +40,10 @@ const AllProjectsModule = () => {
 };
 
 const ProjectListItemConnected = ({ projectId }: { projectId: ProjectId }) => {
-    const projectEnvelope = useAppSelector(projectEnteties.selectors.selectById(projectId));
+    const { data: project } = useProject(projectId);
 
     // FIXIT: return null
-    if (!projectEnvelope) return <div>&nbsp;</div>;
-
-    const project = unwrapEntityEnvelope(projectEnvelope);
+    if (!project) return <div>&nbsp;</div>;
 
     return <ProjectListItem id={project.id} title={project.title} />;
 };

@@ -25,37 +25,71 @@ class ApiService implements IApiService {
     }
 
     async getAll<T = any>(resourceName: string) {
-        const { data, error, status } = await this.#supabase.from<T>(resourceName).select();
+        const { data, error, status, count } = await this.#supabase
+            .from<T>(resourceName)
+            .select("*", { count: "exact" });
 
         if (error) {
             return left(new NetworkError(error.message, status));
         }
 
-        return right(data || []);
+        if (data) {
+            return right({ data, totalCount: count || data.length });
+        }
+
+        return right({ data: [], totalCount: 0 });
     }
 
-    async getById<T = any>(resourceName: string, id: any) {
-        try {
-            const response = await this.#axios.get<T>(`/${resourceName}/${id}`);
+    async getById<T = any>(resourceName: string, resourseId: any) {
+        const { data, error, status } = await this.#supabase
+            .from<T>(resourceName)
+            .select()
+            .match({
+                id: resourseId,
+            })
+            .single();
 
-            return right(response.data);
-        } catch (error) {
-            return this.handleError(error);
+        if (!data || error) {
+            return left(new NetworkError(error?.message, status));
         }
+
+        return right(data);
     }
 
     async insert<T = any>(resourceName: string, data: Partial<T>) {
         const {
-            data: project,
+            data: resource,
             error,
             status,
         } = await this.#supabase.from<T>(resourceName).insert([data]).single();
 
-        if (!project || error) {
+        if (!resource || error) {
             return left(new NetworkError(error?.message, status));
         }
 
-        return right(project);
+        return right(resource);
+    }
+
+    async remove<T extends any>(resourceName: string, resourseId: any) {
+        const {
+            data: resource,
+            error,
+            status,
+        } = await this.#supabase
+            .from<T>(resourceName)
+            .delete({
+                returning: "representation",
+            })
+            .match({
+                id: resourseId,
+            })
+            .single();
+
+        if (!resource || error) {
+            return left(new NetworkError(error?.message, status));
+        }
+
+        return right(resource);
     }
 
     private handleError(error: unknown): Either<NetworkError, never> {

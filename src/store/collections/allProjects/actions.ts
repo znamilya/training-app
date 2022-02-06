@@ -4,26 +4,40 @@ import { schema as normalizr, normalize, NormalizedSchema } from "normalizr";
 import { Project, ProjectId } from "../../../enteties/project/types";
 import ProjectsService from "../../../services/ProjectsService";
 import { schemas } from "../../entities/projects";
+import { RootState } from "../../store";
 
 const normalizeT = <T extends object>(data: T[], schemas: normalizr.Array<T>) =>
     normalize<T, Record<string, Record<string, T>>, string[]>(data, schemas);
 
 export const load = createAsyncThunk<
-    NormalizedSchema<Record<"projects", Record<ProjectId, Project>>, ProjectId[]>,
+    NormalizedSchema<Record<"projects", Record<ProjectId, Project>>, ProjectId[]> & {
+        totalCount: number;
+    },
     void,
     {
         extra: {
             projectsService: ProjectsService;
         };
     }
->("allProjects/fetch", async (_arg, thunkApi) => {
-    const { projectsService } = thunkApi.extra;
+>(
+    "allProjects/fetch",
+    async (_arg, { extra }) => {
+        const result = await extra.projectsService.fetchAll();
 
-    const result = await projectsService.fetchAll();
+        if (result.isLeft()) {
+            throw result.value;
+        }
 
-    if (result.isLeft()) {
-        throw result.value;
-    }
+        const { data, totalCount } = result.value;
 
-    return normalizeT(result.value, schemas);
-});
+        return { ...normalizeT(data, schemas), totalCount };
+    },
+    {
+        condition: (_, { getState }) => {
+            const state = getState() as RootState;
+            const isStale = state.collections.allProjects.isStale;
+
+            return isStale;
+        },
+    },
+);

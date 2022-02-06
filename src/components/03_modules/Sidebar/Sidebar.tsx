@@ -23,10 +23,9 @@ type ProjectMenuSectionItemProps = {
 const ProjectMenuSectionItem = ({ projectId }: ProjectMenuSectionItemProps) => {
     const { selectProjectById, selectUncompletedTasksCount } = useProjects();
     const projectEnvelope = selectProjectById(projectId);
-
-    if (!projectEnvelope) return null;
-
     const project = unwrapEntityEnvelope(projectEnvelope);
+
+    if (!project) return null;
 
     return (
         <MenuSectionItem
