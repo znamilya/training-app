@@ -2,11 +2,32 @@ import { Either } from "@sweet-monads/either";
 
 import NetworkError from "../errors/NetworkError";
 
-export interface IApiService {
-    getAll<T = any>(
+type SupaOptions = {
+    select?: string;
+    match?: Record<string, any>;
+};
+
+export interface IRestApiService {
+    getAll<TRemote extends object, TLocal extends object>(
         resourceName: string,
-    ): Promise<Either<NetworkError, { data: T[]; totalCount: number }>>;
-    getById<T = any>(resourceName: string, resourseId: any): Promise<Either<NetworkError, T>>;
-    insert<T = any>(resourceName: string, data: any): Promise<Either<NetworkError, T>>;
-    remove<T = any>(resourceName: string, resourseId: any): Promise<Either<NetworkError, T>>;
+        options?: SupaOptions,
+    ): Promise<Either<NetworkError, { data: TLocal[]; totalCount: number }>>;
+    get<TRemote extends object, TLocal extends object>(
+        resourceName: string,
+        resourseId: any,
+        options?: SupaOptions,
+    ): Promise<Either<NetworkError, TLocal>>;
+    insert<TRemote extends object, TLocal extends object>(
+        resourceName: string,
+        data: Partial<TLocal>,
+    ): Promise<Either<NetworkError, TLocal>>;
+    remove<TRemote extends object, TLocal extends object>(
+        resourceName: string,
+        resourseId: any,
+    ): Promise<Either<NetworkError, TLocal>>;
+    update<TRemote extends object, TLocal extends object>(
+        resourceName: string,
+        resourseId: any,
+        data: Partial<TLocal>,
+    ): Promise<Either<NetworkError, TLocal>>;
 }

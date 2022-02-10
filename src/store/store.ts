@@ -6,8 +6,10 @@ import projectsEnteties from "./entities/projects";
 import tasksEnteties from "./entities/tasks";
 import allInboxTasksCollection from "./collections/allInboxTasks";
 import allProjectsCollection from "./collections/allProjects";
-import ProjectsService from "../services/ProjectsService";
+import allActiveProjects from "./collections/allActiveProjects";
 import SupabaseApiService from "../services/SupabaseApiService";
+import ProjectsService from "../services/ProjectsService";
+import TasksService from "../services/TasksService";
 
 export const rootReducer = combineReducers({
     enteties: combineReducers({
@@ -16,6 +18,7 @@ export const rootReducer = combineReducers({
     }),
     collections: combineReducers({
         allProjects: allProjectsCollection.reducer,
+        allActiveProjects: allActiveProjects.reducer,
         allInboxTasks: allInboxTasksCollection.reducer,
     }),
 });
@@ -28,10 +31,14 @@ const projectsService = new ProjectsService({
     apiService,
 });
 
+const tasksService = new TasksService({
+    apiService,
+});
+
 const store = configureStore({
     reducer: rootReducer,
     devTools: true,
-    middleware: [thunkMiddleware.withExtraArgument({ projectsService })],
+    middleware: [thunkMiddleware.withExtraArgument({ projectsService, tasksService })],
 });
 
 export type RootState = ReturnType<typeof store.getState>;

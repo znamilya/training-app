@@ -1,16 +1,16 @@
 import { Either } from "@sweet-monads/either";
 
-import { Project, ProjectId } from "../enteties/project/types";
+import { Project, ProjectDto, ProjectId } from "../enteties/project/types";
 import ProjectsServiceError from "../errors/ProjectsServiceError";
 
-import { IApiService } from "./types";
+import { IRestApiService } from "./types";
 
 type ProjectsServiceParams = {
-    apiService: IApiService;
+    apiService: IRestApiService;
 };
 
 class ProjectsService {
-    #apiService: IApiService;
+    #apiService: IRestApiService;
 
     constructor({ apiService }: ProjectsServiceParams) {
         this.#apiService = apiService;
@@ -19,7 +19,22 @@ class ProjectsService {
     async fetchAll(): Promise<
         Either<ProjectsServiceError, { data: Project[]; totalCount: number }>
     > {
-        const result = await this.#apiService.getAll<Project>("projects");
+        const result = await this.#apiService.getAll<ProjectDto, Project>("projects");
+
+        return result.mapLeft(
+            (error) => new ProjectsServiceError("Can't load projects", error.statusCode),
+        );
+    }
+
+    async fetchAllActive(): Promise<
+        Either<ProjectsServiceError, { data: Project[]; totalCount: number }>
+    > {
+        const result = await this.#apiService.getAll<ProjectDto, Project>("projects", {
+            select: "*, tasks (*)",
+            match: {
+                is_active: true,
+            },
+        });
 
         return result.mapLeft(
             (error) => new ProjectsServiceError("Can't load projects", error.statusCode),
@@ -27,7 +42,10 @@ class ProjectsService {
     }
 
     async fetch(projectId: ProjectId): Promise<Either<ProjectsServiceError, Project>> {
-        const result = await this.#apiService.getById<Project>("projects", projectId);
+        const result = await this.#apiService.get<ProjectDto, Project>("projects", projectId, {
+            // Enbed project's tasks
+            select: "*, tasks (*)",
+        });
 
         return result.mapLeft(
             (error) => new ProjectsServiceError("Can't load project", error.statusCode),
@@ -35,7 +53,7 @@ class ProjectsService {
     }
 
     async insert(title: string): Promise<Either<ProjectsServiceError, Project>> {
-        const result = await this.#apiService.insert<Project>("projects", {
+        const result = await this.#apiService.insert<ProjectDto, Project>("projects", {
             title,
             tasks: [],
         });
@@ -46,10 +64,25 @@ class ProjectsService {
     }
 
     async remove(projectId: ProjectId): Promise<Either<ProjectsServiceError, Project>> {
-        const result = await this.#apiService.remove<Project>("projects", projectId);
+        const result = await this.#apiService.remove<ProjectDto, Project>("projects", projectId);
 
         return result.mapLeft(
             (error) => new ProjectsServiceError("Can't remove project", error.statusCode),
+        );
+    }
+
+    async update(
+        projectId: ProjectId,
+        data: Partial<Project>,
+    ): Promise<Either<ProjectsServiceError, Project>> {
+        const result = await this.#apiService.update<ProjectDto, Project>(
+            "projects",
+            projectId,
+            data,
+        );
+
+        return result.mapLeft(
+            (error) => new ProjectsServiceError("Can't update project", error.statusCode),
         );
     }
 }

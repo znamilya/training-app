@@ -11,35 +11,34 @@ import MenuSection, { MenuSectionItem } from "../../01_basic/MenuSection";
 
 import { RootStyled } from "./Sidebar.styled";
 // import useInbox from "../../../hooks/controllers/useInbox";
-import useProjects from "../../../hooks/controllers/useProjects";
 import { useAppSelector } from "../../../store/store";
+import { useAllActiveProjects } from "../../../store/collections/allActiveProjects";
 import * as allProjectsCollection from "../../../store/collections/allProjects";
 import { unwrapEntityEnvelope } from "../../../store/utils";
+import { useProject } from "../../../store/entities/projects";
 
 type ProjectMenuSectionItemProps = {
     projectId: ProjectId;
 };
 
 const ProjectMenuSectionItem = ({ projectId }: ProjectMenuSectionItemProps) => {
-    const { selectProjectById, selectUncompletedTasksCount } = useProjects();
-    const projectEnvelope = selectProjectById(projectId);
-    const project = unwrapEntityEnvelope(projectEnvelope);
+    const project = useProject(projectId);
 
-    if (!project) return null;
+    if (!project.data) return null;
 
     return (
         <MenuSectionItem
-            icon={<FormatListBulletedIcon />}
-            title={project.title}
-            href={routes.project({ projectId: project.id })}
-            tasksCount={selectUncompletedTasksCount(projectId)}
+            // icon={<FormatListBulletedIcon />}
+            title={project.data.title}
+            href={routes.project({ projectId: project.data.id })}
+            tasksCount={project.data.tasks.length}
         />
     );
 };
 
 const SidebarModule = () => {
     const allProjectsTotalCount = useAppSelector(allProjectsCollection.selectors.selectTotalCount);
-    const allActiveProjectsIds = useAppSelector(allProjectsCollection.selectors.selectAllActiveIds);
+    const allActiveProjects = useAllActiveProjects();
 
     return (
         <RootStyled variant="permanent">
@@ -71,7 +70,7 @@ const SidebarModule = () => {
                 /> */}
             </MenuSection>
             <MenuSection titleTransId="SidebarModule.ActiveProjects">
-                {allActiveProjectsIds.map((projectId) => (
+                {allActiveProjects.data.map((projectId) => (
                     <ProjectMenuSectionItem projectId={projectId} />
                 ))}
             </MenuSection>

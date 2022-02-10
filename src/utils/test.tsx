@@ -36,15 +36,21 @@ export const setupServer = ({
     response = [],
     status = 200,
     url = "/",
+    method = "GET",
     delay,
 }: {
     response: any;
     status?: number;
     url?: string;
+    method?: "GET" | "PATCH";
     delay?: number;
 }) => {
+    const methodsMap = {
+        GET: "get",
+        PATCH: "patch",
+    } as const;
     const handlers = [
-        rest.get(url, async (_, res, ctx) => {
+        rest[methodsMap[method]](url, async (_, res, ctx) => {
             if (delay) {
                 await ctx.delay(delay);
             }
@@ -53,7 +59,9 @@ export const setupServer = ({
         }),
     ];
     const server = setupMSWServer(...handlers);
-    server.listen();
+    server.listen({
+        onUnhandledRequest: "warn",
+    });
 
     return {
         closeServer: () => {

@@ -1,10 +1,11 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, isAllOf, isPending, PayloadAction } from "@reduxjs/toolkit";
 
 import { Task, TaskId } from "../../../enteties/task";
+import { EntityEnvelope } from "../../types";
 
 import * as actions from "./actions";
 
-type State = Record<TaskId, Task>;
+type State = Record<TaskId, EntityEnvelope<Task>>;
 
 const initialState: State = {};
 
@@ -14,65 +15,108 @@ const slice = createSlice({
     reducers: {},
     extraReducers(builder) {
         builder
-            .addCase(actions.create, (state, action) => {
-                const task = action.payload;
-
-                // @ts-ignore
-                state[task.id] = {
-                    isComplete: false,
-                    isNextAction: false,
-                    ...task,
-                };
-            })
-            .addCase(actions.rename, (state, action) => {
+            .addCase(actions.rename, (selfState, action) => {
                 const { taskId, newTitle } = action.payload;
-                const task = state[taskId];
+                const task = selfState[taskId];
 
-                if (!task) return state;
+                if (!task.data) return;
 
-                state[taskId].title = newTitle;
+                task.data.title = newTitle;
             })
-            .addCase(actions.remove, (state, action) => {
-                const { taskId } = action.payload;
-                const task = state[taskId];
+            // REMOVE
+            .addCase(actions.remove.pending, (selfState, { meta }) => {
+                const taskId = meta.arg;
+                const task = selfState[taskId];
 
-                if (!task) return state;
+                if (!task) return;
 
-                delete state[taskId];
+                task.status = "removing";
+                task.error = null;
             })
+            .addCase(actions.remove.fulfilled, (selfState, { meta }) => {
+                const taskId = meta.arg;
+                const task = selfState[taskId];
+
+                if (!task) return;
+
+                task.status = "idle";
+            })
+            .addCase(actions.remove.rejected, (selfState, { meta, error }) => {
+                const taskId = meta.arg;
+                const task = selfState[taskId];
+
+                if (!task) return;
+
+                task.status = "error";
+                task.error = error.message || "";
+            })
+            // COMPLETE
+            .addCase(actions.complete.pending, (selfState, { meta }) => {
+                const { taskId } = meta.arg;
+                const task = selfState[taskId];
+
+                if (!task) return;
+
+                task.status = "completing";
+                task.error = null;
+            })
+            .addCase(actions.complete.fulfilled, (selfState, { meta }) => {
+                const { taskId } = meta.arg;
+                const task = selfState[taskId];
+
+                if (!task) return;
+
+                task.status = "idle";
+            })
+            .addCase(actions.complete.rejected, (selfState, { meta, error }) => {
+                const { taskId } = meta.arg;
+                const task = selfState[taskId];
+
+                if (!task) return;
+
+                task.status = "error";
+                task.error = error.message || "";
+            })
+            // SCHEDULE
             .addCase(actions.schedule, (state, action) => {
                 const taskId = action.payload;
                 const task = state[taskId];
 
-                if (!task) return state;
+                if (!task.data) return;
 
-                task.isNextAction = true;
+                task.data.isNextAction = true;
             })
             .addCase(actions.unschedule, (state, action) => {
                 const taskId = action.payload;
                 const task = state[taskId];
 
-                if (!task) return state;
+                if (!task.data) return;
 
-                task.isNextAction = false;
-            })
-            .addCase(actions.complete, (state, action) => {
-                const taskId = action.payload;
-                const task = state[taskId];
-
-                if (!task) return state;
-
-                task.isComplete = true;
-                task.isNextAction = false;
+                task.data.isNextAction = false;
             })
             .addCase(actions.uncomplete, (state, action) => {
                 const taskId = action.payload;
                 const task = state[taskId];
 
-                if (!task) return state;
+                if (!task.data) return;
 
-                task.isComplete = false;
+                task.data.isComplete = false;
             });
+
+        builder.addMatcher(
+            () => true,
+            (selfState, { payload }) => {
+                if (payload?.entities?.["tasks"]) {
+                    for (const task of Object.values(
+                        payload.entities.tasks,
+                    ) as EntityEnvelope<Task>[]) {
+                        if (task.data) {
+                            selfState[task.data.id] = task;
+                        }
+                    }
+                }
+            },
+        );
     },
 });
 

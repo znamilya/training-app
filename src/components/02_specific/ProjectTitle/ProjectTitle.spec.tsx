@@ -53,6 +53,7 @@ describe("Render", () => {
                                 title: PROJECT_TITLE,
                             }),
                             error: null,
+                            isStale: false,
                         },
                     },
                 },

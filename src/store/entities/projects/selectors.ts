@@ -30,5 +30,5 @@ export const selectUncompletedTasksCount =
             .map((taskId) => tasksEntities.selectors.selectById(taskId))
             .map((select) => select(state))
             .filter(notEmpty)
-            .filter((task) => !task.isComplete).length;
+            .filter((task) => !task.data?.isComplete).length;
     };

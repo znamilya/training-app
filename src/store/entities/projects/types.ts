@@ -5,7 +5,7 @@ import { EntityEnvelope } from "../../types";
 
 export type ProjectEnvelope = EntityEnvelope<Project>;
 
-export type NormalizedReponse = NormalizedSchema<
-    Record<"projects", Record<ProjectId, EntityEnvelope<Project>>>,
+export type NormalizedReponse<T> = NormalizedSchema<
+    Record<"projects", Record<ProjectId, EntityEnvelope<T>>>,
     ProjectId
 >;

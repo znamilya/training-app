@@ -6,7 +6,7 @@ import { ListStyled, ActionsStyled } from "./TasksList.styled";
 
 export type TasksListProps = {
     children: ReactNode;
-    onTaskAdd(taskTitle: string): void;
+    onTaskAdd(taskTitle: string, onSuccess: () => void, onError: () => void): void;
 };
 
 /**
@@ -17,25 +17,19 @@ const TasksList = ({ children, onTaskAdd }: TasksListProps) => {
 
     return (
         <>
-            {hasItems ? <List /> : <EmptyMessage />}
+            {hasItems ? (
+                <ListStyled spacing={1} component="ul">
+                    {children}
+                </ListStyled>
+            ) : (
+                <div>No tasks yet...</div>
+            )}
 
             <ActionsStyled>
                 <NewButton addButtonText="Add Task" onCreate={onTaskAdd} />
             </ActionsStyled>
         </>
     );
-
-    function List() {
-        return (
-            <ListStyled spacing={1} component="ul">
-                {children}
-            </ListStyled>
-        );
-    }
-
-    function EmptyMessage() {
-        return <div>No tasks yet...</div>;
-    }
 };
 
 export default TasksList;

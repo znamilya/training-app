@@ -12,7 +12,6 @@ export const renderComponent = (props: Partial<TasksListItemProps>) => {
         onComplete: () => {},
         onStart: () => {},
         onStop: () => {},
-        onEdit: () => {},
         onRemove: () => {},
     };
 
@@ -164,20 +163,20 @@ describe("Stop the task", () => {
     });
 });
 
-describe("Edit the task", () => {
-    it("calls onEdit callback with task id when click on edit button", () => {
-        const TASK_ID = faker.datatype.uuid();
-        const onEditMock = jest.fn();
-        const { getEditButton } = renderComponent({
-            id: TASK_ID,
-            onEdit: onEditMock,
-        });
+// describe("Edit the task", () => {
+//     it("calls onEdit callback with task id when click on edit button", () => {
+//         const TASK_ID = faker.datatype.uuid();
+//         const onEditMock = jest.fn();
+//         const { getEditButton } = renderComponent({
+//             id: TASK_ID,
+//             onEdit: onEditMock,
+//         });
 
-        userEvent.click(getEditButton());
-        expect(onEditMock).toHaveBeenCalledTimes(1);
-        expect(onEditMock).toHaveBeenCalledWith(TASK_ID);
-    });
-});
+//         userEvent.click(getEditButton());
+//         expect(onEditMock).toHaveBeenCalledTimes(1);
+//         expect(onEditMock).toHaveBeenCalledWith(TASK_ID);
+//     });
+// });
 
 describe("Remove the task", () => {
     it("calls onRemove callback with task id when click on edit button", () => {

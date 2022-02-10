@@ -13,6 +13,7 @@ export type HasError<T = any> = {
  *******************************************************************/
 export type EntityEnvelope<T> = {
     data: T | null;
+    isStale: boolean;
 } & HasStatus &
     HasError<string>;
 

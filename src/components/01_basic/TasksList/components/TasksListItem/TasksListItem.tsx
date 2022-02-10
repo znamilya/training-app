@@ -1,5 +1,8 @@
 import { memo } from "react";
 import { Button } from "@mui/material";
+import { LoadingButton } from "@mui/lab";
+import DeleteIcon from "@mui/icons-material/Delete";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 
 import { TaskId } from "../../../../../enteties/task";
 
@@ -16,10 +19,10 @@ export type TasksListItemProps = {
     title: string;
     isComplete: boolean;
     isNextAction: boolean;
+    isRemoving?: boolean;
     onComplete(taskId: TaskId, isChecked: boolean): void;
     onStart(taskId: TaskId): void;
     onStop(taskId: TaskId): void;
-    onEdit(taskId: TaskId): void;
     onRemove(taskId: TaskId): void;
 };
 
@@ -28,12 +31,14 @@ const TasksListItem = ({
     title,
     isComplete,
     isNextAction,
+    isRemoving = false,
     onComplete,
     onStart,
     onStop,
-    onEdit,
     onRemove,
 }: TasksListItemProps) => {
+    const shouldDisableButtons = isRemoving;
+
     return (
         <RootStyled component="li" elevation={1}>
             <CheckboxStyled>
@@ -41,6 +46,7 @@ const TasksListItem = ({
                     type="checkbox"
                     aria-label="Complete the task"
                     checked={isComplete}
+                    disabled={shouldDisableButtons}
                     onChange={(event) => {
                         onComplete(id, event.target.checked);
                     }}
@@ -55,12 +61,30 @@ const TasksListItem = ({
 
             <ActionsStyled>
                 {isComplete ? null : isNextAction ? (
-                    <Button onClick={() => onStop(id)}>stop</Button>
+                    <LoadingButton
+                        sx={{ minWidth: "auto" }}
+                        disabled={shouldDisableButtons}
+                        onClick={() => onStop(id)}
+                    >
+                        stop
+                    </LoadingButton>
                 ) : (
-                    <Button onClick={() => onStart(id)}>start</Button>
+                    <LoadingButton
+                        sx={{ minWidth: "auto" }}
+                        disabled={shouldDisableButtons}
+                        onClick={() => onStart(id)}
+                    >
+                        <PlayArrowIcon />
+                    </LoadingButton>
                 )}
-                <Button onClick={() => onEdit(id)}>edit</Button>
-                <Button onClick={() => onRemove(id)}>remove</Button>
+                <LoadingButton
+                    sx={{ minWidth: "auto" }}
+                    loading={isRemoving}
+                    disabled={shouldDisableButtons}
+                    onClick={() => onRemove(id)}
+                >
+                    <DeleteIcon />
+                </LoadingButton>
             </ActionsStyled>
         </RootStyled>
     );

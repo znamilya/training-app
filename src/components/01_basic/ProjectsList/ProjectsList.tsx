@@ -2,7 +2,7 @@ import { Children, ReactNode } from "react";
 
 import NewButton from "../NewButton";
 
-import { ListStyled, ActionsStyled } from "./ProjectsList.styled";
+import { RootStyled, ListStyled } from "./ProjectsList.styled";
 
 export type ProjectsListProps = {
     children: ReactNode;
@@ -16,7 +16,11 @@ const ProjectsList = ({ children, onProjectAdd }: ProjectsListProps) => {
     const hasItems = Children.count(children) > 0;
 
     return (
-        <>
+        <RootStyled>
+            <div>
+                <NewButton addButtonText="Add Project" onCreate={onProjectAdd} />
+            </div>
+
             {hasItems ? (
                 <ListStyled spacing={1} component={"ul"}>
                     {children}
@@ -24,11 +28,7 @@ const ProjectsList = ({ children, onProjectAdd }: ProjectsListProps) => {
             ) : (
                 <div>No projects yet...</div>
             )}
-
-            <ActionsStyled>
-                <NewButton addButtonText="Add Project" onCreate={onProjectAdd} />
-            </ActionsStyled>
-        </>
+        </RootStyled>
     );
 };
 

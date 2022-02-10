@@ -1,17 +1,14 @@
 import { memo } from "react";
 
 import { ProjectId } from "../../../enteties/project/types";
-import useProjects from "../../../hooks/controllers/useProjects";
-import { unwrapEntityEnvelope } from "../../../store/utils";
+import { useProject } from "../../../store/entities/projects";
 
 export type ProjectTitleProps = {
     projectId: ProjectId;
 };
 
 const ProjectTitle = ({ projectId }: ProjectTitleProps) => {
-    const { selectProjectById } = useProjects();
-    const projectEnvelope = selectProjectById(projectId);
-    const project = unwrapEntityEnvelope(projectEnvelope);
+    const { data: project } = useProject(projectId);
 
     if (!project) return null;
 

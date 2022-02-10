@@ -36,7 +36,6 @@ describe("Render", () => {
                         onComplete={() => {}}
                         onStart={() => {}}
                         onStop={() => {}}
-                        onEdit={() => {}}
                         onRemove={() => {}}
                         key="1"
                     />,
@@ -45,7 +44,6 @@ describe("Render", () => {
                         onComplete={() => {}}
                         onStart={() => {}}
                         onStop={() => {}}
-                        onEdit={() => {}}
                         onRemove={() => {}}
                         key="2"
                     />,

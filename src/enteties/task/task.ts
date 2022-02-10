@@ -13,6 +13,14 @@ export type Task = {
     isNextAction: boolean;
 };
 
+export type TaskDto = {
+    id: TaskId;
+    title: string;
+    project_id?: ProjectId;
+    is_complete: boolean;
+    is_next_action: boolean;
+};
+
 export const create = (task: Optional<Task, "isComplete" | "isNextAction">): Task => ({
     ...task,
     isComplete: false,

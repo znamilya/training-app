@@ -1,11 +1,13 @@
 import { AsyncThunkPayloadCreator, createAsyncThunk as cat } from "@reduxjs/toolkit";
 import ProjectsService from "../services/ProjectsService";
+import TasksService from "../services/TasksService";
 import { EntityEnvelope, HasError, HasStatus } from "./types";
 
 export const wrapEntityEnvelope = <T>(data: T): EntityEnvelope<T> => ({
     status: "success",
     data,
     error: null,
+    isStale: true,
 });
 
 export const unwrapEntityEnvelope = <T>(envelope: EntityEnvelope<T> | null): T | null =>
@@ -23,6 +25,7 @@ export const createAsyncThunk = <Returned, ThunkArg = void>(
         {
             extra: {
                 projectsService: ProjectsService;
+                tasksService: TasksService;
             };
         }
     >,

@@ -2,14 +2,12 @@ import { IntlProvider } from "react-intl";
 import { CssBaseline, GlobalStyles } from "@mui/material";
 import { BrowserRouter } from "react-router-dom";
 import { Route, Switch } from "react-router";
-import { Provider as ReduxProvider } from "react-redux";
 
 import ruMessages from "../../translations/ru.json";
 import enMessages from "../../translations/en.json";
 
 import routes from "../../routes";
 import useAppController from "../../hooks/controllers/useAppController";
-import store from "../../store";
 // import HeaderModule from "../03_modules/Header";
 import SidebarModule from "../03_modules/Sidebar";
 import PageWrapper from "../04_layouts/PageWrapper";
@@ -21,6 +19,9 @@ import ProjectDetailsPage from "../05_pages/ProjectDetails";
 
 import { RootStyled } from "./App.styled";
 import PageTitle from "../01_basic/PageTitle";
+import { useEffect, useState } from "react";
+import { useAllProjects } from "../../store/collections/allProjects";
+import { useAllActiveProjects } from "../../store/collections/allActiveProjects";
 
 const messagesMap = {
     ru: ruMessages,
@@ -29,6 +30,13 @@ const messagesMap = {
 
 function App() {
     const { lang } = useAppController();
+    const { load } = useAllProjects();
+    const allActiveProjects = useAllActiveProjects();
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        Promise.all([load(), allActiveProjects.load()]).then(() => setIsLoading(false));
+    }, [load]);
 
     return (
         <RootStyled>
@@ -46,36 +54,41 @@ function App() {
                     },
                 }}
             />
-            <ReduxProvider store={store}>
-                <IntlProvider locale={lang} messages={messagesMap[lang]}>
-                    <BrowserRouter>
-                        {/* <HeaderModule /> */}
-                        <SidebarModule />
-                        <PageWrapper>
-                            <Switch>
-                                {/* <Route path={routes.inbox.template} exact>
+
+            <IntlProvider locale={lang} messages={messagesMap[lang]}>
+                <BrowserRouter>
+                    {/* <HeaderModule /> */}
+                    {isLoading ? (
+                        "Loading... "
+                    ) : (
+                        <>
+                            <SidebarModule />
+                            <PageWrapper>
+                                <Switch>
+                                    {/* <Route path={routes.inbox.template} exact>
                                     <InboxTasksPage />
                                 </Route> */}
-                                <Route path={routes.today.template} exact>
-                                    <TodayTasksPage />
-                                </Route>
-                                <Route path={routes.projects.template} exact>
-                                    <AllProjectsPage />
-                                </Route>
-                                <Route path={routes.project.template} exact>
-                                    <ProjectDetailsPage />
-                                </Route>
-                                <Route path={routes.categories.template} exact>
-                                    <AllCategoriesPage />
-                                </Route>
-                                <Route path="*">
-                                    <PageTitle>Page not found</PageTitle>
-                                </Route>
-                            </Switch>
-                        </PageWrapper>
-                    </BrowserRouter>
-                </IntlProvider>
-            </ReduxProvider>
+                                    <Route path={routes.today.template} exact>
+                                        <TodayTasksPage />
+                                    </Route>
+                                    <Route path={routes.projects.template} exact>
+                                        <AllProjectsPage />
+                                    </Route>
+                                    <Route path={routes.project.template} exact>
+                                        <ProjectDetailsPage />
+                                    </Route>
+                                    <Route path={routes.categories.template} exact>
+                                        <AllCategoriesPage />
+                                    </Route>
+                                    <Route path="*">
+                                        <PageTitle>Page not found</PageTitle>
+                                    </Route>
+                                </Switch>
+                            </PageWrapper>
+                        </>
+                    )}
+                </BrowserRouter>
+            </IntlProvider>
         </RootStyled>
     );
 }
