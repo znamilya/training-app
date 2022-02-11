@@ -93,14 +93,6 @@ const slice = createSlice({
                 if (!task.data) return;
 
                 task.data.isNextAction = false;
-            })
-            .addCase(actions.uncomplete, (state, action) => {
-                const taskId = action.payload;
-                const task = state[taskId];
-
-                if (!task.data) return;
-
-                task.data.isComplete = false;
             });
 
         builder.addMatcher(

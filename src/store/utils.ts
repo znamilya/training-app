@@ -1,6 +1,7 @@
 import { AsyncThunkPayloadCreator, createAsyncThunk as cat } from "@reduxjs/toolkit";
 import ProjectsService from "../services/ProjectsService";
 import TasksService from "../services/TasksService";
+import { RootState } from "./store";
 import { EntityEnvelope, HasError, HasStatus } from "./types";
 
 export const wrapEntityEnvelope = <T>(data: T): EntityEnvelope<T> => ({
@@ -23,6 +24,7 @@ export const createAsyncThunk = <Returned, ThunkArg = void>(
         Returned,
         ThunkArg,
         {
+            getState(): RootState;
             extra: {
                 projectsService: ProjectsService;
                 tasksService: TasksService;

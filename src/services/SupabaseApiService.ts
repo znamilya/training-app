@@ -2,7 +2,7 @@ import { right, left } from "@sweet-monads/either";
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 
 import NetworkError from "../errors/NetworkError";
-import { IRestApiService, Options } from "./types";
+import { Embedded, IRestApiService, Options } from "./types";
 import { camelCase, snakeCase } from "change-case";
 import { renameKeysWith } from "../utils/object";
 
@@ -20,18 +20,23 @@ class SupabaseApiService implements IRestApiService {
         );
     }
 
-    #embedToSelect(embed: string[] = []) {
-        return ["*", ...embed.map((e) => `${e} (*)`)].filter((x) => x).join(", ");
-    }
-
     async getAll<TRemote extends object, TLocal extends object>(
         resourceName: string,
-        options: Options = {},
+        options: Options<TRemote> = {},
     ) {
-        const { data, error, status, count } = await this.#supabase
+        let query = this.#supabase
             .from<TRemote>(resourceName)
-            .select(this.#embedToSelect(options.embed), { count: "exact" })
-            .match(options.match || {});
+            .select(this.#embedToSelect(options.embed), { count: "exact" });
+
+        if (options.match) {
+            query = query.match(options.match);
+        }
+
+        if (options.orderBy) {
+            query = query.order(options.orderBy);
+        }
+
+        const { data, error, status, count } = await query;
 
         if (error) {
             return left(new NetworkError(error.message, status));
@@ -49,15 +54,25 @@ class SupabaseApiService implements IRestApiService {
     async get<TRemote extends object, TLocal extends object>(
         resourceName: string,
         resourseId: any,
-        options: Options = {},
+        options: Options<TRemote> = {},
     ) {
-        const { data, error, status } = await this.#supabase
+        let query = this.#supabase
             .from<TRemote>(resourceName)
             .select(this.#embedToSelect(options.embed))
             .match({
                 id: resourseId,
-            })
-            .single();
+            });
+
+        if (options.embed) {
+            options.embed.forEach((e) => {
+                if (e.orderBy) {
+                    // @ts-ignore
+                    query = query.order(e.orderBy, { foreignTable: e.name });
+                }
+            });
+        }
+
+        const { data, error, status } = await query.single();
 
         if (!data || error) {
             return left(new NetworkError(error?.message, status));
@@ -139,6 +154,10 @@ class SupabaseApiService implements IRestApiService {
 
     #normalizeKeys<From extends object, To extends object>(data: From): To {
         return renameKeysWith<From, To>(data, camelCase);
+    }
+
+    #embedToSelect(embed: Embedded[] = []) {
+        return ["*", ...embed.map((e) => `${e.name} (*)`)].filter((x) => x).join(", ");
     }
 }
 

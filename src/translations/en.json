@@ -6,5 +6,6 @@
     "SidebarModule.NextTasks": "Today",
     "SidebarModule.ActiveProjects": "Active Projects",
     "SidebarModule.AllProjects": "All Projects",
+    "SidebarModule.CompletedProjects": "Completed Projects",
     "SidebarModule.Categories": "Categories"
 }

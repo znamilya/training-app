@@ -55,6 +55,15 @@ const slice = createSlice({
                 if (!selfState.ids.includes(projectId)) return;
 
                 selfState.ids = selfState.ids.filter((id) => id !== projectId);
+            })
+            // Completed project can't be active, so we remove it from the collection
+            .addCase(projectEnteties.actions.complete.fulfilled, (selfState, { payload }) => {
+                const projectId = payload.result;
+
+                // Check that completed Project was active and do nothing it is wasn't
+                if (!selfState.ids.includes(projectId)) return;
+
+                selfState.ids = selfState.ids.filter((id) => id !== projectId);
             });
     },
 });

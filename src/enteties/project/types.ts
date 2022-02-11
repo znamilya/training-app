@@ -8,18 +8,22 @@ export type ProjectId = string;
 
 export type ProjectDto = {
     id: ProjectId;
+    created_at: number;
     title: string;
     tasks: Task[];
     category?: CategoryId;
-    isActive: boolean;
+    is_active: boolean;
+    is_completed: boolean;
 };
 
 export type Project = {
     id: ProjectId;
+    createdAt: number;
     title: string;
     tasks: TaskId[];
     category?: CategoryId;
     isActive: boolean;
+    isCompleted: boolean;
 };
 
 export const attachTask = (project: Project, taskId: TaskId): Project => ({
@@ -37,8 +41,10 @@ export const generateTitle = (length: number = 5) =>
 
 export const generateProject = (project: Partial<Project> = {}): Project => ({
     id: buildId(),
+    createdAt: Date.now(),
     title: generateTitle(),
     tasks: [],
     isActive: false,
+    isCompleted: false,
     ...project,
 });

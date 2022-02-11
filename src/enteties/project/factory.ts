@@ -8,8 +8,10 @@ export const generateProjectTitle = (length: number = 5) =>
 
 export const createProject = (project: Partial<Project> = {}): Project => ({
     id: buildId(),
+    createdAt: Date.now(),
     title: generateProjectTitle(),
     tasks: [],
     isActive: false,
+    isCompleted: false,
     ...project,
 });

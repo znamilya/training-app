@@ -28,7 +28,8 @@ export type MenuSectionItemProps = {
     );
 const MenuSectionItem = ({ href, icon, ...props }: MenuSectionItemProps) => {
     const secondaryAction = props.disableCounter ? null : props.tasksCount === 0 ? (
-        <CheckIcon color="success" />
+        // <CheckIcon color="success" />
+        <TaskCounter value={0} />
     ) : (
         <TaskCounter value={props.tasksCount} />
     );

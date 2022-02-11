@@ -33,7 +33,7 @@ const projectsSlice = createSlice({
 
                 selfState[projectId].status = "loading";
             })
-            .addCase(actions.fetch.fulfilled, (selfState, { meta, payload }) => {
+            .addCase(actions.fetch.fulfilled, (selfState, { meta }) => {
                 const { projectId } = meta.arg;
                 const project = selfState[projectId];
 
@@ -41,7 +41,7 @@ const projectsSlice = createSlice({
 
                 project.isStale = false;
             })
-            .addCase(actions.fetch.rejected, (selfState, { meta, error, payload }) => {
+            .addCase(actions.fetch.rejected, (selfState, { meta, error }) => {
                 const { projectId } = meta.arg;
                 const project = selfState[projectId];
 
@@ -121,6 +121,17 @@ const projectsSlice = createSlice({
                 project.status = "stoping";
                 project.error = null;
             })
+            // COMPLETE
+            .addCase(actions.complete.pending, (state, { meta }) => {
+                const { projectId } = meta.arg;
+                const project = state[projectId];
+
+                if (!project) return;
+
+                project.status = "compliting";
+                project.error = null;
+            })
+
             // TASK CREATED
             .addCase(tasksActions.create.fulfilled, (selfState, { meta, payload }) => {
                 const { projectId } = meta.arg;

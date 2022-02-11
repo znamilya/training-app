@@ -1,13 +1,17 @@
-import { IntlProvider } from "react-intl";
-import { CssBaseline, GlobalStyles } from "@mui/material";
 import { BrowserRouter } from "react-router-dom";
 import { Route, Switch } from "react-router";
+import { Redirect } from "typesafe-routes/react-router";
+import { IntlProvider } from "react-intl";
+import { CssBaseline, GlobalStyles } from "@mui/material";
 
 import ruMessages from "../../translations/ru.json";
 import enMessages from "../../translations/en.json";
 
 import routes from "../../routes";
 import useAppController from "../../hooks/controllers/useAppController";
+import { useAllProjects } from "../../store/collections/allProjects";
+import { useAllActiveProjects } from "../../store/collections/allActiveProjects";
+import { useAllCompletedProjects } from "../../store/collections/allCompletedProjects";
 // import HeaderModule from "../03_modules/Header";
 import SidebarModule from "../03_modules/Sidebar";
 import PageWrapper from "../04_layouts/PageWrapper";
@@ -20,8 +24,6 @@ import ProjectDetailsPage from "../05_pages/ProjectDetails";
 import { RootStyled } from "./App.styled";
 import PageTitle from "../01_basic/PageTitle";
 import { useEffect, useState } from "react";
-import { useAllProjects } from "../../store/collections/allProjects";
-import { useAllActiveProjects } from "../../store/collections/allActiveProjects";
 
 const messagesMap = {
     ru: ruMessages,
@@ -32,10 +34,13 @@ function App() {
     const { lang } = useAppController();
     const { load } = useAllProjects();
     const allActiveProjects = useAllActiveProjects();
+    const allCompletedProjects = useAllCompletedProjects();
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        Promise.all([load(), allActiveProjects.load()]).then(() => setIsLoading(false));
+        Promise.all([load(), allActiveProjects.load(), allCompletedProjects.load()]).then(() =>
+            setIsLoading(false),
+        );
     }, [load]);
 
     return (
@@ -68,6 +73,9 @@ function App() {
                                     {/* <Route path={routes.inbox.template} exact>
                                     <InboxTasksPage />
                                 </Route> */}
+                                    <Route path="/" exact>
+                                        <Redirect to={routes.projects({})} />
+                                    </Route>
                                     <Route path={routes.today.template} exact>
                                         <TodayTasksPage />
                                     </Route>

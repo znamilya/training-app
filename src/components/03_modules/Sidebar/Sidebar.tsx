@@ -17,6 +17,7 @@ import * as allProjectsCollection from "../../../store/collections/allProjects";
 import { unwrapEntityEnvelope } from "../../../store/utils";
 import { useProject } from "../../../store/entities/projects";
 import { Divider } from "@mui/material";
+import { useAllCompletedProjects } from "../../../store/collections/allCompletedProjects";
 
 type ProjectMenuSectionItemProps = {
     projectId: ProjectId;
@@ -24,6 +25,7 @@ type ProjectMenuSectionItemProps = {
 
 const ProjectMenuSectionItem = ({ projectId }: ProjectMenuSectionItemProps) => {
     const project = useProject(projectId);
+    const uncompletedTasksCount = project.selectUncompletedTasksCount();
 
     if (!project.data) return null;
 
@@ -32,7 +34,7 @@ const ProjectMenuSectionItem = ({ projectId }: ProjectMenuSectionItemProps) => {
             // icon={<FormatListBulletedIcon />}
             title={project.data.title}
             href={routes.project({ projectId: project.data.id })}
-            tasksCount={project.data.tasks.length}
+            tasksCount={uncompletedTasksCount}
         />
     );
 };
@@ -40,6 +42,7 @@ const ProjectMenuSectionItem = ({ projectId }: ProjectMenuSectionItemProps) => {
 const SidebarModule = () => {
     const allProjectsTotalCount = useAppSelector(allProjectsCollection.selectors.selectTotalCount);
     const allActiveProjects = useAllActiveProjects();
+    const allCompletedProjects = useAllCompletedProjects();
 
     return (
         <RootStyled variant="permanent">
@@ -66,10 +69,16 @@ const SidebarModule = () => {
                     tasksCount={xxx.length}
                 /> */}
                 <MenuSectionItem
-                    icon={<ListAltIcon />}
+                    // icon={<ListAltIcon />}
                     titleTransId="SidebarModule.AllProjects"
                     href={routes.projects({})}
                     tasksCount={allProjectsTotalCount}
+                />
+                <MenuSectionItem
+                    // icon={<ListAltIcon />}
+                    titleTransId="SidebarModule.CompletedProjects"
+                    href={routes.projects({})}
+                    tasksCount={allCompletedProjects.totalCount}
                 />
                 {/* <MenuSectionItem
                     icon={<ListAltIcon />}

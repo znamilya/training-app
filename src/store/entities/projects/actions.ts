@@ -106,3 +106,21 @@ export const stop = createAsyncThunk<
 
     return normalize(result.value, schema);
 });
+
+export const complete = createAsyncThunk<
+    NormalizedSchema<Record<"projects", Record<ProjectId, EntityEnvelope<Project>>>, ProjectId>,
+    { projectId: ProjectId }
+>("projects/complete", async ({ projectId }, thunkApi) => {
+    const { projectsService } = thunkApi.extra;
+
+    const result = await projectsService.update(projectId, {
+        isCompleted: true,
+        isActive: false,
+    });
+
+    if (result.isLeft()) {
+        throw result.value;
+    }
+
+    return normalize(result.value, schema);
+});

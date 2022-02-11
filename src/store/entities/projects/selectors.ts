@@ -20,7 +20,7 @@ export const selectActive = (state: RootState): EntityEnvelope<Project>[] => {
 };
 
 export const selectUncompletedTasksCount =
-    (projectId: ProjectId) =>
+    (projectId: ProjectId): ((state: RootState) => number) =>
     (state: RootState): number => {
         const projectEnvelope = selectById(projectId)(state);
 

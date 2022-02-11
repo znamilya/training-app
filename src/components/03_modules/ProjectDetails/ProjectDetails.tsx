@@ -27,15 +27,18 @@ const ProjectDetailsModule = ({ projectId }: ProjectDetailsModuleProps) => {
     const {
         data: project,
         error,
+        isCompleted,
         isLoading,
         isRenaming,
         isRemoving,
         isStarting,
         isStoping,
+        isCompliting,
         fetch,
         rename,
         start,
         stop,
+        complete,
     } = useProject(projectId);
     const task = useTask();
     const history = useHistory();
@@ -71,6 +74,10 @@ const ProjectDetailsModule = ({ projectId }: ProjectDetailsModuleProps) => {
         history.push(routes.projects({}).$);
     };
 
+    const handleCompleteButtonClick = () => {
+        complete(projectId);
+    };
+
     const handleAddTask = async (title: string, onSuccess: () => void, onError: () => void) => {
         task.create({ projectId, title })
             .then(() => {
@@ -92,7 +99,8 @@ const ProjectDetailsModule = ({ projectId }: ProjectDetailsModuleProps) => {
         return <PageTitle>Unknown project</PageTitle>;
     }
 
-    const shouldDisableButtons = isRenaming || isRemoving || isStarting || isStoping;
+    const shouldDisableButtons =
+        isRenaming || isRemoving || isStarting || isStoping || isCompliting;
 
     return (
         <>
@@ -101,7 +109,7 @@ const ProjectDetailsModule = ({ projectId }: ProjectDetailsModuleProps) => {
                     // STOP BUTTON
                     <LoadingButton
                         startIcon={<PauseIcon />}
-                        disabled={shouldDisableButtons}
+                        disabled={shouldDisableButtons || isCompleted}
                         loading={isStoping}
                         onClick={handleStopButtonClick}
                     >
@@ -111,7 +119,7 @@ const ProjectDetailsModule = ({ projectId }: ProjectDetailsModuleProps) => {
                     // START BUTTON
                     <LoadingButton
                         startIcon={<PlayArrowIcon />}
-                        disabled={shouldDisableButtons}
+                        disabled={shouldDisableButtons || isCompleted}
                         loading={isStarting}
                         onClick={handleStartButtonClick}
                     >
@@ -137,6 +145,17 @@ const ProjectDetailsModule = ({ projectId }: ProjectDetailsModuleProps) => {
                 >
                     Remove
                 </LoadingButton>
+
+                {/* COMPLETE BUTTON */}
+                {!isCompleted && (
+                    <LoadingButton
+                        disabled={shouldDisableButtons}
+                        loading={isCompliting}
+                        onClick={handleCompleteButtonClick}
+                    >
+                        Complete
+                    </LoadingButton>
+                )}
             </Stack>
 
             <TasksList onTaskAdd={handleAddTask}>
@@ -149,7 +168,7 @@ const ProjectDetailsModule = ({ projectId }: ProjectDetailsModuleProps) => {
 };
 
 const TaskListItemConnected = ({ taskId }: { taskId: TaskId }) => {
-    const { data: task, remove, complete, isRemoving } = useTask(taskId);
+    const { data: task, isRemoving, remove, complete } = useTask(taskId);
 
     if (!task) return null;
 

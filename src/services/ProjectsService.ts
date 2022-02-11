@@ -19,7 +19,13 @@ class ProjectsService {
     async fetchAll(): Promise<
         Either<ProjectsServiceError, { data: Project[]; totalCount: number }>
     > {
-        const result = await this.#apiService.getAll<ProjectDto, Project>("projects");
+        const result = await this.#apiService.getAll<ProjectDto, Project>("projects", {
+            embed: [{ name: "tasks", orderBy: "create_at" }],
+            match: {
+                is_completed: false,
+            },
+            orderBy: "created_at",
+        });
 
         return result.mapLeft(
             (error) => new ProjectsServiceError("Can't load projects", error.statusCode),
@@ -30,21 +36,37 @@ class ProjectsService {
         Either<ProjectsServiceError, { data: Project[]; totalCount: number }>
     > {
         const result = await this.#apiService.getAll<ProjectDto, Project>("projects", {
-            embed: ["tasks"],
+            embed: [{ name: "tasks", orderBy: "created_at" }],
             match: {
                 is_active: true,
             },
+            orderBy: "created_at",
         });
 
         return result.mapLeft(
-            (error) => new ProjectsServiceError("Can't load projects", error.statusCode),
+            (error) => new ProjectsServiceError("Can't load active projects", error.statusCode),
+        );
+    }
+
+    async fetchAllCompleted(): Promise<
+        Either<ProjectsServiceError, { data: Project[]; totalCount: number }>
+    > {
+        const result = await this.#apiService.getAll<ProjectDto, Project>("projects", {
+            embed: [{ name: "tasks", orderBy: "created_at" }],
+            match: {
+                is_completed: true,
+            },
+            orderBy: "created_at",
+        });
+
+        return result.mapLeft(
+            (error) => new ProjectsServiceError("Can't load completed projects", error.statusCode),
         );
     }
 
     async fetch(projectId: ProjectId): Promise<Either<ProjectsServiceError, Project>> {
         const result = await this.#apiService.get<ProjectDto, Project>("projects", projectId, {
-            // Enbed project's tasks
-            embed: ["tasks"],
+            embed: [{ name: "tasks", orderBy: "created_at" }],
         });
 
         return result.mapLeft(
