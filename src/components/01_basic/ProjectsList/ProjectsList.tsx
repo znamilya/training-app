@@ -6,7 +6,7 @@ import { RootStyled, ListStyled } from "./ProjectsList.styled";
 
 export type ProjectsListProps = {
     children: ReactNode;
-    onProjectAdd(title: string, onSuccess: () => void, onError: () => void): void;
+    onProjectAdd?: (title: string, onSuccess: () => void, onError: () => void) => void;
 };
 
 /**
@@ -17,9 +17,11 @@ const ProjectsList = ({ children, onProjectAdd }: ProjectsListProps) => {
 
     return (
         <RootStyled>
-            <div>
-                <NewButton addButtonText="Add Project" onCreate={onProjectAdd} />
-            </div>
+            {onProjectAdd && (
+                <div>
+                    <NewButton addButtonText="Add Project" onCreate={onProjectAdd} />
+                </div>
+            )}
 
             {hasItems ? (
                 <ListStyled spacing={1} component={"ul"}>

@@ -35,5 +35,6 @@ export interface IRestApiService {
         resourceName: string,
         resourseId: any,
         data: Partial<TLocal>,
+        options?: Options<TRemote>,
     ): Promise<Either<NetworkError, TLocal>>;
 }

@@ -77,7 +77,7 @@ const SidebarModule = () => {
                 <MenuSectionItem
                     // icon={<ListAltIcon />}
                     titleTransId="SidebarModule.CompletedProjects"
-                    href={routes.projects({})}
+                    href={routes.completedProjects({})}
                     tasksCount={allCompletedProjects.totalCount}
                 />
                 {/* <MenuSectionItem

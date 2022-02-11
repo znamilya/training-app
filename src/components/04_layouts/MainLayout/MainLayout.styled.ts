@@ -2,7 +2,7 @@ import { styled } from "@mui/material";
 
 export const HeaderStyled = styled("header")(({ theme }) => ({
     padding: theme.spacing(2),
-    background: theme.palette.grey["300"],
+    background: `linear-gradient(90deg, ${theme.palette.grey["300"]}, ${theme.palette.grey["200"]})`,
 
     [theme.breakpoints.up("sm")]: {
         padding: theme.spacing(3),

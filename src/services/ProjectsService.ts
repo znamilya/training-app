@@ -101,6 +101,10 @@ class ProjectsService {
             "projects",
             projectId,
             data,
+
+            {
+                embed: [{ name: "tasks", orderBy: "created_at" }],
+            },
         );
 
         return result.mapLeft(

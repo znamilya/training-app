@@ -1,18 +1,18 @@
-import { Paper, styled } from "@mui/material";
+import { Checkbox, Paper, styled } from "@mui/material";
 
 export const RootStyled = styled(Paper)(({ theme }) => ({
     display: "flex",
     padding: theme.spacing(1),
 }));
 
-export const CheckboxStyled = styled("div")({
+export const CheckboxStyled = styled(Checkbox)({
     alignSelf: "start",
 });
 
 export const TitleWrapperStyled = styled("div")(({ theme }) => ({
     flex: 1,
     alignSelf: "center",
-    paddingLeft: theme.spacing(2),
+    paddingLeft: theme.spacing(1),
     paddingRight: theme.spacing(2),
 }));
 

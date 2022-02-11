@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { ChangeEvent, memo, MouseEvent } from "react";
 import { LoadingButton } from "@mui/lab";
 import DeleteIcon from "@mui/icons-material/Delete";
 // import PlayArrowIcon from "@mui/icons-material/PlayArrow";
@@ -40,17 +40,14 @@ const TasksListItem = ({
 
     return (
         <RootStyled component="li" elevation={1}>
-            <CheckboxStyled>
-                <input
-                    type="checkbox"
-                    aria-label="Complete the task"
-                    checked={isComplete}
-                    disabled={shouldDisableButtons}
-                    onChange={(event) => {
-                        onComplete(id, event.target.checked);
-                    }}
-                />
-            </CheckboxStyled>
+            <CheckboxStyled
+                aria-label="Complete the task"
+                checked={isComplete}
+                disabled={shouldDisableButtons}
+                onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                    onComplete(id, event.target.checked);
+                }}
+            />
 
             <TitleWrapperStyled>
                 <TitleStyled data-testid="tasks-list-item-title">

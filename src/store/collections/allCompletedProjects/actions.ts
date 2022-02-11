@@ -35,7 +35,7 @@ export const load = createAsyncThunk<
     {
         condition: (_, { getState }) => {
             const state = getState() as RootState;
-            const isStale = state.collections.allProjects.isStale;
+            const isStale = state.collections.allCompletedProjects.isStale;
 
             return isStale;
         },

@@ -4,7 +4,7 @@ export const RootStyled = styled("li")({});
 
 export const PaperStyled = styled(Paper)(({ theme }) => ({
     display: "flex",
-    padding: theme.spacing(1),
+    padding: theme.spacing(2),
     textDecoration: "none",
 }));
 

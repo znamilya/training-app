@@ -130,6 +130,7 @@ class SupabaseApiService implements IRestApiService {
         resourceName: string,
         resourseId: any,
         data: Partial<TLocal>,
+        options: Options<TRemote> = {},
     ) {
         const {
             data: resource,
@@ -138,6 +139,7 @@ class SupabaseApiService implements IRestApiService {
         } = await this.#supabase
             .from<TRemote>(resourceName)
             .update(this.#prepareKeys<Partial<TLocal>, Partial<TRemote>>(data))
+            .select(this.#embedToSelect(options.embed))
             .match({ id: resourseId })
             .single();
 

@@ -19,6 +19,7 @@ import TodayTasksPage from "../05_pages/TodayTasks";
 // import InboxTasksPage from "../05_pages/InboxTasks";
 import AllCategoriesPage from "../05_pages/AllCategories";
 import AllProjectsPage from "../05_pages/AllProjects";
+import CompletedProjectsPage from "../05_pages/CompletedProjects";
 import ProjectDetailsPage from "../05_pages/ProjectDetails";
 
 import { RootStyled } from "./App.styled";
@@ -81,6 +82,9 @@ function App() {
                                     </Route>
                                     <Route path={routes.projects.template} exact>
                                         <AllProjectsPage />
+                                    </Route>
+                                    <Route path={routes.completedProjects.template} exact>
+                                        <CompletedProjectsPage />
                                     </Route>
                                     <Route path={routes.project.template} exact>
                                         <ProjectDetailsPage />
