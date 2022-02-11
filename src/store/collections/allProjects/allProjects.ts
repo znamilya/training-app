@@ -6,7 +6,7 @@ import * as projectEnteties from "../../entities/projects";
 
 import * as actions from "./actions";
 
-type AllProjectsCollectionState = CollectionAllEnvelope<ProjectId>;
+type AllProjectsCollectionState = CollectionAllEnvelope<ProjectId, "idle" | "loading" | "error">;
 
 const initialState: AllProjectsCollectionState = {
     totalCount: 0,
@@ -24,11 +24,12 @@ const allProjectsCollection = createSlice({
         builder
             .addCase(actions.load.pending, (selfState) => {
                 selfState.status = "loading";
+                selfState.error = null;
             })
             .addCase(actions.load.fulfilled, (selfState, { payload }) => {
+                selfState.status = "idle";
                 selfState.ids = payload.result;
                 selfState.totalCount = payload.totalCount;
-                selfState.status = "success";
                 selfState.isStale = false;
             })
             .addCase(actions.load.rejected, (selfState, { error }) => {
@@ -41,6 +42,7 @@ const allProjectsCollection = createSlice({
 
                 selfState.ids.push(payload.result);
             })
+            // Every time a Project removed the entire collection have to be refetched
             .addCase(projectEnteties.actions.remove.fulfilled, (selfState) => {
                 selfState.isStale = true;
             });

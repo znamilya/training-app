@@ -30,7 +30,7 @@ class ProjectsService {
         Either<ProjectsServiceError, { data: Project[]; totalCount: number }>
     > {
         const result = await this.#apiService.getAll<ProjectDto, Project>("projects", {
-            select: "*, tasks (*)",
+            embed: ["tasks"],
             match: {
                 is_active: true,
             },
@@ -44,7 +44,7 @@ class ProjectsService {
     async fetch(projectId: ProjectId): Promise<Either<ProjectsServiceError, Project>> {
         const result = await this.#apiService.get<ProjectDto, Project>("projects", projectId, {
             // Enbed project's tasks
-            select: "*, tasks (*)",
+            embed: ["tasks"],
         });
 
         return result.mapLeft(

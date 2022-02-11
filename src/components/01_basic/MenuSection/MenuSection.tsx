@@ -14,7 +14,6 @@ const MenuSection = ({ titleTransId, children }: MenuSectionProps) => {
                 subheader={
                     titleTransId && (
                         <>
-                            <Divider />
                             <ListSubheader id="menu-section-title" data-testid="menu-section-title">
                                 <FormattedMessage id={titleTransId} />
                             </ListSubheader>

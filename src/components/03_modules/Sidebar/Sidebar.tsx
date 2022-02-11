@@ -16,6 +16,7 @@ import { useAllActiveProjects } from "../../../store/collections/allActiveProjec
 import * as allProjectsCollection from "../../../store/collections/allProjects";
 import { unwrapEntityEnvelope } from "../../../store/utils";
 import { useProject } from "../../../store/entities/projects";
+import { Divider } from "@mui/material";
 
 type ProjectMenuSectionItemProps = {
     projectId: ProjectId;
@@ -43,6 +44,14 @@ const SidebarModule = () => {
     return (
         <RootStyled variant="permanent">
             {/* <Toolbar /> */}
+            <MenuSection titleTransId="SidebarModule.ActiveProjects">
+                {allActiveProjects.data.map((projectId) => (
+                    <ProjectMenuSectionItem projectId={projectId} />
+                ))}
+            </MenuSection>
+
+            <Divider />
+
             <MenuSection>
                 {/* <MenuSectionItem
                     icon={<InboxIcon />}
@@ -68,11 +77,6 @@ const SidebarModule = () => {
                     href={routes.categories({})}
                     disableCounter
                 /> */}
-            </MenuSection>
-            <MenuSection titleTransId="SidebarModule.ActiveProjects">
-                {allActiveProjects.data.map((projectId) => (
-                    <ProjectMenuSectionItem projectId={projectId} />
-                ))}
             </MenuSection>
         </RootStyled>
     );

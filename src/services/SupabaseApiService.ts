@@ -2,17 +2,12 @@ import { right, left } from "@sweet-monads/either";
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 
 import NetworkError from "../errors/NetworkError";
-import { IRestApiService } from "./types";
+import { IRestApiService, Options } from "./types";
 import { camelCase, snakeCase } from "change-case";
 import { renameKeysWith } from "../utils/object";
 
 type ApiServiceParams = {
     url: string;
-};
-
-type SupaOptions = {
-    select?: string;
-    match?: Record<string, any>;
 };
 
 class SupabaseApiService implements IRestApiService {
@@ -25,13 +20,17 @@ class SupabaseApiService implements IRestApiService {
         );
     }
 
+    #embedToSelect(embed: string[] = []) {
+        return ["*", ...embed.map((e) => `${e} (*)`)].filter((x) => x).join(", ");
+    }
+
     async getAll<TRemote extends object, TLocal extends object>(
         resourceName: string,
-        options: SupaOptions = {},
+        options: Options = {},
     ) {
         const { data, error, status, count } = await this.#supabase
             .from<TRemote>(resourceName)
-            .select(options.select || "*", { count: "exact" })
+            .select(this.#embedToSelect(options.embed), { count: "exact" })
             .match(options.match || {});
 
         if (error) {
@@ -50,11 +49,11 @@ class SupabaseApiService implements IRestApiService {
     async get<TRemote extends object, TLocal extends object>(
         resourceName: string,
         resourseId: any,
-        options: SupaOptions = {},
+        options: Options = {},
     ) {
         const { data, error, status } = await this.#supabase
             .from<TRemote>(resourceName)
-            .select(options.select)
+            .select(this.#embedToSelect(options.embed))
             .match({
                 id: resourseId,
             })

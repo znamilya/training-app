@@ -1,8 +1,7 @@
 import { memo } from "react";
-import { Button } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import DeleteIcon from "@mui/icons-material/Delete";
-import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+// import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 
 import { TaskId } from "../../../../../enteties/task";
 
@@ -60,7 +59,7 @@ const TasksListItem = ({
             </TitleWrapperStyled>
 
             <ActionsStyled>
-                {isComplete ? null : isNextAction ? (
+                {/* {isComplete ? null : isNextAction ? (
                     <LoadingButton
                         sx={{ minWidth: "auto" }}
                         disabled={shouldDisableButtons}
@@ -76,7 +75,7 @@ const TasksListItem = ({
                     >
                         <PlayArrowIcon />
                     </LoadingButton>
-                )}
+                )} */}
                 <LoadingButton
                     sx={{ minWidth: "auto" }}
                     loading={isRemoving}

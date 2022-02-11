@@ -6,7 +6,7 @@ import * as projectEnteties from "../../entities/projects";
 
 import * as actions from "./actions";
 
-type AllProjectsCollectionState = CollectionAllEnvelope<ProjectId>;
+type AllProjectsCollectionState = CollectionAllEnvelope<ProjectId, "idle" | "loading" | "error">;
 
 const initialState: AllProjectsCollectionState = {
     totalCount: 0,
@@ -24,11 +24,12 @@ const slice = createSlice({
         builder
             .addCase(actions.load.pending, (selfState) => {
                 selfState.status = "loading";
+                selfState.error = null;
             })
             .addCase(actions.load.fulfilled, (selfState, { payload }) => {
+                selfState.status = "idle";
                 selfState.ids = payload.result;
                 selfState.totalCount = payload.totalCount;
-                selfState.status = "success";
                 selfState.isStale = false;
             })
             .addCase(actions.load.rejected, (selfState, { error }) => {
@@ -46,8 +47,12 @@ const slice = createSlice({
 
                 selfState.ids = selfState.ids.filter((id) => id !== projectId);
             })
+            // Removed project can't be active, so we remove it from the collection
             .addCase(projectEnteties.actions.remove.fulfilled, (selfState, { payload }) => {
                 const projectId = payload.result;
+
+                // Check that removed Project was active and do nothing it is wasn't
+                if (!selfState.ids.includes(projectId)) return;
 
                 selfState.ids = selfState.ids.filter((id) => id !== projectId);
             });

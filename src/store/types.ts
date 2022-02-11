@@ -1,7 +1,7 @@
 import { AnyId } from "../types";
 
-export type HasStatus = {
-    status: string;
+export type HasStatus<T extends string = string> = {
+    status: T;
 };
 
 export type HasError<T = any> = {
@@ -20,16 +20,20 @@ export type EntityEnvelope<T> = {
 /*******************************************************************
  * COLLECTIONS
  *******************************************************************/
-export type CollectionEvelope<EntityId extends AnyId = string> = {
+export type CollectionEvelope<EntityId extends AnyId = string, Statuses extends string = string> = {
     totalCount: number;
     ids: EntityId[];
     isStale: boolean;
-} & HasStatus &
+} & HasStatus<Statuses> &
     HasError<string>;
 
-export type CollectionAllEnvelope<EntityId extends AnyId = string> = CollectionEvelope<EntityId>;
+export type CollectionAllEnvelope<
+    EntityId extends AnyId = string,
+    Statuses extends string = string,
+> = CollectionEvelope<EntityId, Statuses>;
 
 export type CollectionByEnvelope<
     EntityId extends AnyId = string,
     EntityById extends AnyId = string,
-> = Record<EntityById, CollectionEvelope<EntityId>>;
+    Statuses extends string = string,
+> = Record<EntityById, CollectionEvelope<EntityId, Statuses>>;

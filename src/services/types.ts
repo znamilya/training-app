@@ -2,20 +2,20 @@ import { Either } from "@sweet-monads/either";
 
 import NetworkError from "../errors/NetworkError";
 
-type SupaOptions = {
-    select?: string;
+export type Options = {
+    embed?: string[];
     match?: Record<string, any>;
 };
 
 export interface IRestApiService {
     getAll<TRemote extends object, TLocal extends object>(
         resourceName: string,
-        options?: SupaOptions,
+        options?: Options,
     ): Promise<Either<NetworkError, { data: TLocal[]; totalCount: number }>>;
     get<TRemote extends object, TLocal extends object>(
         resourceName: string,
         resourseId: any,
-        options?: SupaOptions,
+        options?: Options,
     ): Promise<Either<NetworkError, TLocal>>;
     insert<TRemote extends object, TLocal extends object>(
         resourceName: string,
