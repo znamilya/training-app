@@ -32,3 +32,17 @@ export const selectUncompletedTasksCount =
             .filter(notEmpty)
             .filter((task) => !task.data?.isComplete).length;
     };
+
+export const selectCompletedTasksCount =
+    (projectId: ProjectId): ((state: RootState) => number) =>
+    (state: RootState): number => {
+        const projectEnvelope = selectById(projectId)(state);
+
+        if (!projectEnvelope) return 0;
+
+        return (projectEnvelope.data?.tasks || [])
+            .map((taskId) => tasksEntities.selectors.selectById(taskId))
+            .map((select) => select(state))
+            .filter(notEmpty)
+            .filter((task) => task.data?.isComplete).length;
+    };

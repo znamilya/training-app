@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, isFulfilled, isPending, isRejected, PayloadAction } from "@reduxjs/toolkit";
 
 import { Project, ProjectId } from "../../../enteties/project/types";
 import { EntityEnvelope } from "../../types";
@@ -8,9 +8,12 @@ import * as actions from "./actions";
 
 type State = Record<ProjectId, EntityEnvelope<Project>>;
 
-const initialState: State = {
-    // "1-orphans": { id: "1-orphans", title: "Orphans", isActive: false, tasks: [] },
-};
+const initialState: State = {};
+
+const hasProjectId = (
+    action: PayloadAction<any, string, { arg: any }>,
+): action is PayloadAction<any, string, { arg: { projectId: ProjectId } }> =>
+    typeof action.meta.arg?.projectId === "string";
 
 const projectsSlice = createSlice({
     name: "projects",
@@ -41,15 +44,6 @@ const projectsSlice = createSlice({
 
                 project.isStale = false;
             })
-            .addCase(actions.fetch.rejected, (selfState, { meta, error }) => {
-                const { projectId } = meta.arg;
-                const project = selfState[projectId];
-
-                if (!project) return;
-
-                project.status = "error";
-                project.error = error.message || "unknown error";
-            })
             // CREATE
             .addCase(actions.create.fulfilled, (state, { payload }) => {
                 const id = payload.result;
@@ -64,7 +58,6 @@ const projectsSlice = createSlice({
                 if (!project) return;
 
                 project.status = "removing";
-                project.error = null;
             })
             .addCase(actions.remove.fulfilled, (state, { payload }) => {
                 const projectId = payload.result;
@@ -74,15 +67,6 @@ const projectsSlice = createSlice({
 
                 delete state[projectId];
             })
-            .addCase(actions.remove.rejected, (state, { meta, error }) => {
-                const { projectId } = meta.arg;
-                const project = state[projectId];
-
-                if (!project) return;
-
-                project.status = "error";
-                project.error = error.message || "unknown error";
-            })
             // RENAME
             .addCase(actions.rename.pending, (state, { meta }) => {
                 const { projectId } = meta.arg;
@@ -91,16 +75,7 @@ const projectsSlice = createSlice({
                 if (!project) return;
 
                 project.status = "renaming";
-                project.error = null;
             })
-            // .addCase(actions.rename.fulfilled, (state, { payload }) => {
-            //     const projectId = payload.result;
-            //     const updatedProject = payload.entities.projects[projectId];
-
-            //     if (!state[projectId]) return;
-
-            //     state[projectId] = updatedProject;
-            // })
             // START
             .addCase(actions.start.pending, (state, { meta }) => {
                 const { projectId } = meta.arg;
@@ -109,7 +84,6 @@ const projectsSlice = createSlice({
                 if (!project) return;
 
                 project.status = "starting";
-                project.error = null;
             })
             // STOP
             .addCase(actions.stop.pending, (state, { meta }) => {
@@ -119,7 +93,6 @@ const projectsSlice = createSlice({
                 if (!project) return;
 
                 project.status = "stoping";
-                project.error = null;
             })
             // COMPLETE
             .addCase(actions.complete.pending, (state, { meta }) => {
@@ -129,7 +102,6 @@ const projectsSlice = createSlice({
                 if (!project) return;
 
                 project.status = "compliting";
-                project.error = null;
             })
 
             // TASK CREATED
@@ -142,7 +114,7 @@ const projectsSlice = createSlice({
                 project.data?.tasks.push(payload.result);
             })
             // TASK REMOVED
-            .addCase(tasksActions.remove.fulfilled, (selfState, { meta, payload }) => {
+            .addCase(tasksActions.remove.fulfilled, (selfState, { payload }) => {
                 const taskId = payload.result;
                 const task = payload.entities.tasks[taskId];
 
@@ -155,6 +127,40 @@ const projectsSlice = createSlice({
 
                 project.data.tasks = project.data?.tasks.filter((id) => id !== taskId);
             });
+
+        builder.addMatcher(isPending, (selfState, action) => {
+            if (!hasProjectId(action)) return;
+
+            const { projectId } = action.meta.arg;
+            const project = selfState[projectId];
+
+            if (!project) return;
+
+            project.error = null;
+        });
+
+        builder.addMatcher(isFulfilled, (selfState, action) => {
+            if (!hasProjectId(action)) return;
+
+            const { projectId } = action.meta.arg;
+            const project = selfState[projectId];
+
+            if (!project) return;
+
+            project.status = "idle";
+        });
+
+        builder.addMatcher(isRejected, (selfState, action) => {
+            if (!hasProjectId(action)) return;
+
+            const { projectId } = action.meta.arg;
+            const project = selfState[projectId];
+
+            if (!project) return;
+
+            project.status = "error";
+            project.error = action.error.message || "unknown error";
+        });
 
         builder.addMatcher(
             () => true,

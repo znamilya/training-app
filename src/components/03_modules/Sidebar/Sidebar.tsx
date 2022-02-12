@@ -1,41 +1,77 @@
-// import { Toolbar } from "@mui/material";
-import { ProjectId } from "../../../enteties/project/types";
-// import InboxIcon from "@mui/icons-material/Inbox";
-import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
+import { NavLink } from "typesafe-routes/react-router";
+import { FormattedMessage } from "react-intl";
+import {
+    Divider,
+    List,
+    ListItem,
+    ListItemButton,
+    ListItemText,
+    ListSubheader,
+    ListItemIcon,
+} from "@mui/material";
 import ListAltIcon from "@mui/icons-material/ListAlt";
-import DoubleArrowIcon from "@mui/icons-material/DoubleArrow";
+import CheckIcon from "@mui/icons-material/Check";
 
 import routes from "../../../routes";
-// import * as projectEnteties from "../../../store/enteties/projects";
-import MenuSection, { MenuSectionItem } from "../../01_basic/MenuSection";
-
-import { RootStyled } from "./Sidebar.styled";
-// import useInbox from "../../../hooks/controllers/useInbox";
+import { ProjectId } from "../../../enteties/project/types";
 import { useAppSelector } from "../../../store/store";
 import { useAllActiveProjects } from "../../../store/collections/allActiveProjects";
 import * as allProjectsCollection from "../../../store/collections/allProjects";
-import { unwrapEntityEnvelope } from "../../../store/utils";
 import { useProject } from "../../../store/entities/projects";
-import { Divider } from "@mui/material";
 import { useAllCompletedProjects } from "../../../store/collections/allCompletedProjects";
+import TaskCounter from "../../01_basic/TaskCounter";
+
+import { RootStyled } from "./Sidebar.styled";
+import { ReactNode } from "react";
 
 type ProjectMenuSectionItemProps = {
     projectId: ProjectId;
 };
 
 const ProjectMenuSectionItem = ({ projectId }: ProjectMenuSectionItemProps) => {
-    const project = useProject(projectId);
-    const uncompletedTasksCount = project.selectUncompletedTasksCount();
+    const { data: project, selectCompletedTasksCount } = useProject(projectId);
+    const completedTasksCount = selectCompletedTasksCount();
 
-    if (!project.data) return null;
+    if (!project) return null;
 
     return (
-        <MenuSectionItem
-            // icon={<FormatListBulletedIcon />}
-            title={project.data.title}
-            href={routes.project({ projectId: project.data.id })}
-            tasksCount={uncompletedTasksCount}
-        />
+        <ListItem
+            disablePadding
+            secondaryAction={
+                completedTasksCount === project.tasks.length ? (
+                    <CheckIcon color="success" />
+                ) : (
+                    <TaskCounter value={completedTasksCount} totalCount={project.tasks.length} />
+                )
+            }
+            key={project.id}
+        >
+            {/* @ts-ignore */}
+            <ListItemButton component={NavLink} to={routes.project({ projectId: project.id })}>
+                <ListItemText>{project.title}</ListItemText>
+            </ListItemButton>
+        </ListItem>
+    );
+};
+
+export type MenuSectionItemProps = {
+    href: { $: string };
+    icon?: ReactNode;
+    titleTransId: string;
+    secondaryAction?: ReactNode;
+};
+
+const MenuSectionItem = ({ href, icon, secondaryAction, ...props }: MenuSectionItemProps) => {
+    return (
+        <ListItem disablePadding secondaryAction={secondaryAction} key={href.$}>
+            {/* @ts-ignore */}
+            <ListItemButton component={NavLink} to={href}>
+                {icon && <ListItemIcon sx={{ minWidth: 40 }}>{icon}</ListItemIcon>}
+                <ListItemText>
+                    <FormattedMessage id={props.titleTransId} />
+                </ListItemText>
+            </ListItemButton>
+        </ListItem>
     );
 };
 
@@ -47,46 +83,36 @@ const SidebarModule = () => {
     return (
         <RootStyled variant="permanent">
             {/* <Toolbar /> */}
-            <MenuSection titleTransId="SidebarModule.ActiveProjects">
+            <List
+                subheader={
+                    <ListSubheader id="menu-section-title" data-testid="menu-section-title">
+                        <FormattedMessage id="SidebarModule.ActiveProjects" />
+                    </ListSubheader>
+                }
+                aria-labelledby="menu-section-title"
+                disablePadding
+            >
                 {allActiveProjects.data.map((projectId) => (
                     <ProjectMenuSectionItem projectId={projectId} />
                 ))}
-            </MenuSection>
+            </List>
 
             <Divider />
 
-            <MenuSection>
-                {/* <MenuSectionItem
-                    icon={<InboxIcon />}
-                    titleTransId="SidebarModule.Inbox"
-                    href={routes.inbox({})}
-                    tasksCount={selectTasksTotalCount()}
-                /> */}
-                {/* <MenuSectionItem
-                    icon={<DoubleArrowIcon />}
-                    titleTransId="SidebarModule.NextTasks"
-                    href={routes.today({})}
-                    tasksCount={xxx.length}
-                /> */}
+            <List disablePadding>
                 <MenuSectionItem
-                    // icon={<ListAltIcon />}
+                    icon={<ListAltIcon />}
                     titleTransId="SidebarModule.AllProjects"
                     href={routes.projects({})}
-                    tasksCount={allProjectsTotalCount}
+                    secondaryAction={<TaskCounter value={allProjectsTotalCount} />}
                 />
                 <MenuSectionItem
-                    // icon={<ListAltIcon />}
+                    icon={<CheckIcon />}
                     titleTransId="SidebarModule.CompletedProjects"
                     href={routes.completedProjects({})}
-                    tasksCount={allCompletedProjects.totalCount}
+                    secondaryAction={<TaskCounter value={allCompletedProjects.totalCount} />}
                 />
-                {/* <MenuSectionItem
-                    icon={<ListAltIcon />}
-                    titleTransId="SidebarModule.Categories"
-                    href={routes.categories({})}
-                    disableCounter
-                /> */}
-            </MenuSection>
+            </List>
         </RootStyled>
     );
 };

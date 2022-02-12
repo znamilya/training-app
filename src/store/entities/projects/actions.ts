@@ -7,11 +7,9 @@ import { createAsyncThunk } from "../../utils";
 
 import { schema } from "./schema";
 
-type FetchParams = { projectId: ProjectId };
-
 export const fetch = createAsyncThunk<
     NormalizedSchema<Record<"projects", Record<ProjectId, EntityEnvelope<Project>>>, ProjectId>,
-    FetchParams
+    { projectId: ProjectId }
 >("projects/fetch", async ({ projectId }, { extra: { projectsService } }) => {
     const result = await projectsService.fetch(projectId);
 

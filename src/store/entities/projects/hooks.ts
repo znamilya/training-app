@@ -4,7 +4,7 @@ import { ProjectId } from "../../../enteties/project/types";
 import { useAppDispatch, useAppSelector } from "../../store";
 
 import { fetch, create, rename, start, stop, complete } from "./actions";
-import { selectById, selectUncompletedTasksCount } from "./selectors";
+import { selectById, selectUncompletedTasksCount, selectCompletedTasksCount } from "./selectors";
 
 export const useProject = (projectId: ProjectId = "") => {
     const dispatch = useAppDispatch();
@@ -60,5 +60,6 @@ export const useProject = (projectId: ProjectId = "") => {
         stop: stopHandler,
         complete: completeHandler,
         selectUncompletedTasksCount: () => selector(selectUncompletedTasksCount(projectId)),
+        selectCompletedTasksCount: () => selector(selectCompletedTasksCount(projectId)),
     };
 };

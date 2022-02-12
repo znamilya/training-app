@@ -2753,6 +2753,11 @@
     estree-walker "^1.0.1"
     picomatch "^2.2.2"
 
+"@rtk-incubator/action-listener-middleware@^0.7.0":
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/@rtk-incubator/action-listener-middleware/-/action-listener-middleware-0.7.0.tgz#5744577e00febe1fc4e15bd59bd0c28de0fccacf"
+  integrity sha512-OitGnK/ZnY8I2MMX6d6lfcXKdwIkBqy8/Re3WtaXgeV87bpKHosXsJstrTQDje7lVkw8xlVA52RTbSj/QfV5qA==
+
 "@rushstack/eslint-patch@^1.1.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@rushstack/eslint-patch/-/eslint-patch-1.1.0.tgz#7f698254aadf921e48dda8c0a6b304026b8a9323"

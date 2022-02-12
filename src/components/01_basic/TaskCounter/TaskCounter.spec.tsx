@@ -6,6 +6,7 @@ import TaskCounter, { TaskCounterProps } from "./TaskCounter";
 const renderComponent = (props: Partial<TaskCounterProps>) => {
     const defaultProps = {
         value: 1,
+        totalCount: 10,
     };
 
     const utils = render(<TaskCounter {...defaultProps} {...props} />);

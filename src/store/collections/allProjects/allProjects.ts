@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, isAnyOf } from "@reduxjs/toolkit";
 
 import { ProjectId } from "../../../enteties/project/types";
 import { CollectionAllEnvelope } from "../../types";
@@ -42,10 +42,20 @@ const allProjectsCollection = createSlice({
 
                 selfState.ids.push(payload.result);
             })
-            // Every time a Project removed the entire collection have to be refetched
-            .addCase(projectEnteties.actions.remove.fulfilled, (selfState) => {
-                selfState.isStale = true;
+            .addCase(projectEnteties.actions.complete.fulfilled, (selfState) => {
+                selfState.totalCount -= 1;
             });
+
+        // Get stale when...
+        builder.addMatcher(
+            isAnyOf(
+                projectEnteties.actions.remove.fulfilled,
+                projectEnteties.actions.complete.fulfilled,
+            ),
+            (selfState) => {
+                selfState.isStale = true;
+            },
+        );
     },
 });
 

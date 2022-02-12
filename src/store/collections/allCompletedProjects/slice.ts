@@ -37,8 +37,18 @@ const slice = createSlice({
                 selfState.error = error.message || null;
             })
             // ENTITY ACIONS
-            .addCase(projectEnteties.actions.complete.fulfilled, (selfState, { payload }) => {
+            .addCase(projectEnteties.actions.complete.fulfilled, (selfState) => {
+                selfState.totalCount += 1;
                 selfState.isStale = true;
+            })
+            .addCase(projectEnteties.actions.remove.fulfilled, (selfState, { payload }) => {
+                const projectId = payload.result;
+
+                // Check that completed Project was active and do nothing it is wasn't
+                if (!selfState.ids.includes(projectId)) return;
+
+                selfState.totalCount -= 1;
+                selfState.ids = selfState.ids.filter((id) => id !== projectId);
             });
     },
 });

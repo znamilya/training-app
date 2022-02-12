@@ -71,7 +71,9 @@ const ProjectDetailsModule = ({ projectId }: ProjectDetailsModuleProps) => {
             }),
         );
 
-        history.push(routes.projects({}).$);
+        const route = isCompleted ? routes.completedProjects({}).$ : routes.projects({}).$;
+
+        history.push(route);
     };
 
     const handleCompleteButtonClick = () => {
