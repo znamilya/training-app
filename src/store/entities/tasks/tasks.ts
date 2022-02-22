@@ -77,22 +77,59 @@ const slice = createSlice({
                 task.status = "error";
                 task.error = error.message || "";
             })
-            // SCHEDULE
-            .addCase(actions.schedule, (state, action) => {
-                const taskId = action.payload;
-                const task = state[taskId];
+            // START
+            .addCase(actions.start.pending, (selfState, { meta }) => {
+                const { taskId } = meta.arg;
+                const task = selfState[taskId];
 
-                if (!task.data) return;
+                if (!task) return;
 
-                task.data.isNextAction = true;
+                task.status = "starting";
+                task.error = null;
             })
-            .addCase(actions.unschedule, (state, action) => {
-                const taskId = action.payload;
-                const task = state[taskId];
+            .addCase(actions.start.fulfilled, (selfState, { meta }) => {
+                const { taskId } = meta.arg;
+                const task = selfState[taskId];
 
-                if (!task.data) return;
+                if (!task) return;
 
-                task.data.isNextAction = false;
+                task.status = "idle";
+            })
+            .addCase(actions.start.rejected, (selfState, { meta, error }) => {
+                const { taskId } = meta.arg;
+                const task = selfState[taskId];
+
+                if (!task) return;
+
+                task.status = "error";
+                task.error = error.message || "";
+            })
+            // STOP
+            .addCase(actions.stop.pending, (selfState, { meta }) => {
+                const { taskId } = meta.arg;
+                const task = selfState[taskId];
+
+                if (!task) return;
+
+                task.status = "stoping";
+                task.error = null;
+            })
+            .addCase(actions.stop.fulfilled, (selfState, { meta }) => {
+                const { taskId } = meta.arg;
+                const task = selfState[taskId];
+
+                if (!task) return;
+
+                task.status = "idle";
+            })
+            .addCase(actions.stop.rejected, (selfState, { meta, error }) => {
+                const { taskId } = meta.arg;
+                const task = selfState[taskId];
+
+                if (!task) return;
+
+                task.status = "error";
+                task.error = error.message || "";
             });
 
         builder.addMatcher(

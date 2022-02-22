@@ -67,6 +67,52 @@ export const complete = createAsyncThunk<
     return normalize(result.value, schema);
 });
 
+export const start = createAsyncThunk<
+    NormalizedSchema<Record<"tasks", Record<ProjectId, EntityEnvelope<Task>>>, TaskId>,
+    { taskId: TaskId }
+>("tasks/start", async ({ taskId }, { getState, extra }) => {
+    const { tasksService } = extra;
+    const state = getState() as RootState;
+    const task = selectById(taskId)(state);
+
+    if (!task?.data) {
+        throw new Error(`Unknonwn task: ${taskId}`);
+    }
+
+    const result = await tasksService.update(taskId, {
+        isNextAction: true,
+    });
+
+    if (result.isLeft()) {
+        throw result.value;
+    }
+
+    return normalize(result.value, schema);
+});
+
+export const stop = createAsyncThunk<
+    NormalizedSchema<Record<"tasks", Record<ProjectId, EntityEnvelope<Task>>>, TaskId>,
+    { taskId: TaskId }
+>("tasks/stop", async ({ taskId }, { getState, extra }) => {
+    const { tasksService } = extra;
+    const state = getState() as RootState;
+    const task = selectById(taskId)(state);
+
+    if (!task?.data) {
+        throw new Error(`Unknonwn task: ${taskId}`);
+    }
+
+    const result = await tasksService.update(taskId, {
+        isNextAction: false,
+    });
+
+    if (result.isLeft()) {
+        throw result.value;
+    }
+
+    return normalize(result.value, schema);
+});
+
 export const rename = createAction<{ taskId: TaskId; newTitle: string }>("tasks/rename");
 export const schedule = createAction<TaskId>("tasks/schedule");
 export const unschedule = createAction<TaskId>("tasks/unschedule");

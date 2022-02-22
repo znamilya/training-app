@@ -5,13 +5,32 @@ export type TaskCounterProps = {
     totalCount?: number;
 };
 
+const resolveProgressColor = (value: number, totalCount: number): string => {
+    if (value === 0) return "error.main";
+    if (value === totalCount) return "success.main";
+
+    return "warning.main";
+};
+
 const TaskCounter = ({ value, totalCount }: TaskCounterProps) => {
-    return totalCount ? (
-        <RootStyled>
-            {value} / {totalCount}
+    return (
+        <RootStyled
+            sx={
+                totalCount
+                    ? {
+                          color: resolveProgressColor(value, totalCount),
+                      }
+                    : {}
+            }
+        >
+            {totalCount ? (
+                <span>
+                    {value} / {totalCount}
+                </span>
+            ) : (
+                <span>{value}</span>
+            )}
         </RootStyled>
-    ) : (
-        <RootStyled>{value}</RootStyled>
     );
 };
 

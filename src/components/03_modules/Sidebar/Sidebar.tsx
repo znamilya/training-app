@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import ListAltIcon from "@mui/icons-material/ListAlt";
 import CheckIcon from "@mui/icons-material/Check";
+import WbSunnyOutlinedIcon from "@mui/icons-material/WbSunnyOutlined";
 
 import routes from "../../../routes";
 import { ProjectId } from "../../../enteties/project/types";
@@ -23,6 +24,7 @@ import TaskCounter from "../../01_basic/TaskCounter";
 
 import { RootStyled } from "./Sidebar.styled";
 import { ReactNode } from "react";
+import { useAllActiveTasks } from "../../../store/collections/allActiveTasks";
 
 type ProjectMenuSectionItemProps = {
     projectId: ProjectId;
@@ -78,11 +80,28 @@ const MenuSectionItem = ({ href, icon, secondaryAction, ...props }: MenuSectionI
 const SidebarModule = () => {
     const allProjectsTotalCount = useAppSelector(allProjectsCollection.selectors.selectTotalCount);
     const allActiveProjects = useAllActiveProjects();
+    const allActiveTasks = useAllActiveTasks();
     const allCompletedProjects = useAllCompletedProjects();
 
     return (
         <RootStyled variant="permanent">
             {/* <Toolbar /> */}
+            <List disablePadding>
+                <MenuSectionItem
+                    icon={<WbSunnyOutlinedIcon />}
+                    titleTransId="SidebarModule.NextTasks"
+                    href={routes.today({})}
+                    secondaryAction={
+                        <TaskCounter
+                            value={allActiveTasks.selectCompletedCount()}
+                            totalCount={allActiveTasks.totalCount}
+                        />
+                    }
+                />
+            </List>
+
+            <Divider />
+
             <List
                 subheader={
                     <ListSubheader id="menu-section-title" data-testid="menu-section-title">
@@ -90,7 +109,6 @@ const SidebarModule = () => {
                     </ListSubheader>
                 }
                 aria-labelledby="menu-section-title"
-                disablePadding
             >
                 {allActiveProjects.data.map((projectId) => (
                     <ProjectMenuSectionItem projectId={projectId} />
@@ -99,7 +117,7 @@ const SidebarModule = () => {
 
             <Divider />
 
-            <List disablePadding>
+            <List>
                 <MenuSectionItem
                     icon={<ListAltIcon />}
                     titleTransId="SidebarModule.AllProjects"

@@ -25,6 +25,7 @@ import ProjectDetailsPage from "../05_pages/ProjectDetails";
 import { RootStyled } from "./App.styled";
 import PageTitle from "../01_basic/PageTitle";
 import { useEffect, useState } from "react";
+import { useAllActiveTasks } from "../../store/collections/allActiveTasks";
 
 const messagesMap = {
     ru: ruMessages,
@@ -34,14 +35,18 @@ const messagesMap = {
 function App() {
     const { lang } = useAppController();
     const { load } = useAllProjects();
+    const allActiveTasks = useAllActiveTasks();
     const allActiveProjects = useAllActiveProjects();
     const allCompletedProjects = useAllCompletedProjects();
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        Promise.all([load(), allActiveProjects.load(), allCompletedProjects.load()]).then(() =>
-            setIsLoading(false),
-        );
+        Promise.all([
+            load(),
+            allActiveTasks.load(),
+            allActiveProjects.load(),
+            allCompletedProjects.load(),
+        ]).then(() => setIsLoading(false));
     }, [load]);
 
     return (

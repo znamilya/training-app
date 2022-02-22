@@ -16,6 +16,8 @@ import TasksList, { TasksListItem } from "../../01_basic/TasksList";
 import { TaskId } from "../../../enteties/task";
 import { useTask } from "../../../store/entities/tasks";
 
+import StartButton from "./components/StartButton";
+
 type ProjectDetailsModuleProps = {
     projectId: ProjectId;
 };
@@ -107,26 +109,22 @@ const ProjectDetailsModule = ({ projectId }: ProjectDetailsModuleProps) => {
     return (
         <>
             <Stack direction="row" spacing={2} mb={2}>
-                {project.isActive ? (
+                {isCompleted ? null : project.isActive ? (
                     // STOP BUTTON
                     <LoadingButton
                         startIcon={<PauseIcon />}
-                        disabled={shouldDisableButtons || isCompleted}
+                        disabled={shouldDisableButtons}
                         loading={isStoping}
                         onClick={handleStopButtonClick}
                     >
                         Stop
                     </LoadingButton>
                 ) : (
-                    // START BUTTON
-                    <LoadingButton
-                        startIcon={<PlayArrowIcon />}
-                        disabled={shouldDisableButtons || isCompleted}
+                    <StartButton
+                        disabled={shouldDisableButtons}
                         loading={isStarting}
                         onClick={handleStartButtonClick}
-                    >
-                        Start
-                    </LoadingButton>
+                    />
                 )}
 
                 {/* RENAME BUTTON */}
@@ -160,7 +158,7 @@ const ProjectDetailsModule = ({ projectId }: ProjectDetailsModuleProps) => {
                 )}
             </Stack>
 
-            <TasksList onTaskAdd={handleAddTask}>
+            <TasksList onTaskAdd={!isCompleted ? handleAddTask : undefined}>
                 {project.tasks.map((taskId) => (
                     <TaskListItemConnected taskId={taskId} key={taskId} />
                 ))}
@@ -170,7 +168,16 @@ const ProjectDetailsModule = ({ projectId }: ProjectDetailsModuleProps) => {
 };
 
 const TaskListItemConnected = ({ taskId }: { taskId: TaskId }) => {
-    const { data: task, isRemoving, remove, complete } = useTask(taskId);
+    const {
+        data: task,
+        isRemoving,
+        isStarting,
+        isStoping,
+        remove,
+        complete,
+        start,
+        stop,
+    } = useTask(taskId);
 
     if (!task) return null;
 
@@ -181,9 +188,11 @@ const TaskListItemConnected = ({ taskId }: { taskId: TaskId }) => {
             isComplete={task.isComplete}
             isNextAction={task.isNextAction}
             isRemoving={isRemoving}
+            isStarting={isStarting}
+            isStoping={isStoping}
             onComplete={complete}
-            onStart={() => {}}
-            onStop={() => {}}
+            onStart={start}
+            onStop={stop}
             onRemove={remove}
             key={taskId}
         />

@@ -10,7 +10,6 @@ import ProjectsList, { ProjectListItem } from "../../01_basic/ProjectsList";
  */
 const CompletedProjectsModule = () => {
     const { data, isLoading, error, load } = useAllCompletedProjects();
-    const { create: createProject } = useProject();
 
     useLayoutEffect(() => {
         load();

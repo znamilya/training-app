@@ -5,6 +5,7 @@ import thunkMiddleware from "redux-thunk";
 import projectsEnteties from "./entities/projects";
 import tasksEnteties from "./entities/tasks";
 import allActiveProjects from "./collections/allActiveProjects";
+import allActiveTasks from "./collections/allActiveTasks";
 import allCompletedProjects from "./collections/allCompletedProjects";
 import allInboxTasksCollection from "./collections/allInboxTasks";
 import allProjectsCollection from "./collections/allProjects";
@@ -19,6 +20,7 @@ export const rootReducer = combineReducers({
     }),
     collections: combineReducers({
         allActiveProjects: allActiveProjects.reducer,
+        allActiveTasks: allActiveTasks.reducer,
         allCompletedProjects: allCompletedProjects.reducer,
         allInboxTasks: allInboxTasksCollection.reducer,
         allProjects: allProjectsCollection.reducer,

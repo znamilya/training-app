@@ -1,6 +1,6 @@
 import { Drawer, styled } from "@mui/material";
 
-export const SIDEBAR_WIDTH = 240;
+export const SIDEBAR_WIDTH = 248;
 
 export const RootStyled = styled(Drawer)({
     width: SIDEBAR_WIDTH,
